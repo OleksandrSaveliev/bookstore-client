@@ -1,0 +1,138 @@
+.container {
+  max-width: 1000px; /* Slightly wider for a more balanced look */
+  margin: 60px auto;
+  padding: 0 24px;
+}
+
+.content {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Soft depth */
+  overflow: hidden;
+  padding: 48px;
+}
+
+.tag {
+  font-size: 11px;
+  letter-spacing: 1px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #2383e2;
+  background: #eef6ff; /* Badge style */
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.info h1 {
+  font-size: 48px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  line-height: 1.1;
+  color: #1a1a1a;
+}
+
+.author {
+  font-size: 20px;
+  color: #6b6f76;
+  margin-bottom: 32px;
+  font-style: italic;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(180px, 1fr)
+  ); /* Responsive grid */
+  gap: 20px;
+  padding: 32px;
+  background: #fcfcfb;
+  border: 1px solid #f0f0ee; /* Subtle border instead of just background */
+  border-radius: 12px;
+  margin-bottom: 40px;
+  font-size: 15px;
+}
+
+.metaGrid div strong {
+  display: block; /* Stack label over value */
+  color: #888;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.description {
+  margin-bottom: 48px;
+}
+
+.description h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1a1a1a;
+}
+
+.description p {
+  line-height: 1.7;
+  color: #444;
+  font-size: 17px;
+}
+
+.actionSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space out price and button */
+  gap: 24px;
+  margin-top: 40px;
+  padding: 32px;
+  background: #f8f9fa; /* Highlighted footer area */
+  border-radius: 12px;
+  border: 1px solid #edf2f7;
+}
+
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.priceLabel {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #95a5a6;
+  letter-spacing: 0.5px;
+}
+
+.priceValue {
+  font-size: 36px;
+  font-weight: 800;
+  color: #2c3e50;
+}
+
+.buttonWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Align hint text to the right */
+  gap: 12px;
+}
+
+.authHint {
+  font-size: 14px;
+  color: #d63031;
+  background: #fff5f5;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ffe3e3;
+}
+
+.authHint a {
+  color: #d63031;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.authHint a:hover {
+  text-decoration: underline;
+}

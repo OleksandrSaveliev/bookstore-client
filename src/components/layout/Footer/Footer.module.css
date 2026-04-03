@@ -1,0 +1,32 @@
+.footer {
+  margin-top: 80px;
+  padding: 40px 0;
+  text-align: center;
+  border-top: 1px solid #f0f0f0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.copyright {
+  color: #999;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.link {
+  color: #6b6f76;
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #2f3437;
+  text-decoration: underline;
+}

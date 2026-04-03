@@ -1,0 +1,70 @@
+/* ---------------------------------------------------------- */
+
+/* src/components/books/BookCard/BookCard.module.css */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px; /* Increased padding for a more "premium" feel */
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background: white;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+
+  /* CRITICAL FIXES */
+  height: 100%; /* Fill the grid cell height */
+  box-sizing: border-box; /* Include padding in the height calculation */
+  overflow: hidden; /* Prevent children from leaking out */
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #7c7c7c96;
+  box-shadow: 0 10px 20px rgba(12, 12, 12, 0.05);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #2f3437;
+}
+
+.author {
+  font-size: 14px;
+  color: #6b6f76;
+  margin-bottom: 24px;
+
+  /* THE SPACER */
+  flex-grow: 1; /* This pushes the .footer to the very bottom of the card */
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /* PADDING & BORDER */
+  margin-top: auto; /* Double insurance to stay at the bottom */
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  width: 100%; /* Ensure it spans the inside of the card */
+}
+
+.price {
+  font-weight: 600;
+  font-size: 16px;
+  color: #2f3437;
+}
+
+.tag {
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f1ef;
+  padding: 4px 10px;
+  border-radius: 5px;
+  color: #6b6f76;
+}

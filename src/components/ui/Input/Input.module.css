@@ -1,0 +1,56 @@
+/* src/components/ui/Input/Input.module.css */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b6f76; /* Notion-style grey */
+  padding-left: 2px;
+}
+
+.input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  font-size: 14px;
+  color: #2f3437;
+  transition: all 0.2s ease;
+  background: #fff;
+  outline: none;
+  font-family: inherit;
+}
+
+.input:focus {
+  border-color: #2f3437; /* Darker border on focus instead of glow */
+  background: #fcfcfc;
+}
+
+.input::placeholder {
+  color: #a0a0a0;
+}
+
+/* State: Error */
+.errorInput {
+  border-color: #eb5757;
+  background: #fffcfc;
+}
+
+.errorMessage {
+  font-size: 12px;
+  color: #eb5757;
+  margin-top: 2px;
+}
+
+/* Utility: Disabled */
+.input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  color: #999;
+}

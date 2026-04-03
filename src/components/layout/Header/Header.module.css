@@ -1,0 +1,98 @@
+.header {
+  height: 60px;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e5e5e5;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2f3437;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.userEmail {
+  font-size: 13px;
+  color: #6b6f76;
+  margin: 0 8px;
+}
+
+.langSwitch {
+  display: flex;
+  gap: 4px;
+  margin-right: 12px;
+}
+
+.langBtn {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b6f76;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.langBtn:hover {
+  background: #f1f1f1;
+}
+
+/* Cart Specific Styles */
+.cartLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #2f3437;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  margin-left: 8px;
+}
+
+.cartLink:hover {
+  background: #f5f5f5;
+}
+
+.cartIconWrapper {
+  position: relative;
+  font-size: 18px;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: #eb5757; /* Danger/Red color */
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  border: 2px solid white;
+}
+
+.cartLabel {
+  font-size: 14px;
+  font-weight: 500;
+}

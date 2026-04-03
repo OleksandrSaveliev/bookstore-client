@@ -1,0 +1,204 @@
+/* src/pages/Cart/Cart.module.css */
+
+.container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2f3437;
+  margin-bottom: 32px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 48px;
+  align-items: start;
+}
+
+/* Item Cards */
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cartItem {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: border-color 0.2s;
+}
+
+.cartItem:hover {
+  border-color: #d1d1d1;
+}
+
+.itemMain {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.itemInfo h3 {
+  font-size: 18px;
+  margin: 0 0 4px 0;
+  color: #2f3437;
+}
+
+.itemInfo p {
+  font-size: 14px;
+  color: #6b6f76;
+  margin: 0;
+}
+
+.priceTag {
+  font-weight: 700;
+  font-size: 18px;
+  color: #2f3437;
+}
+
+.itemActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f1f1;
+  padding-top: 16px;
+}
+
+/* Quantity Controls */
+.quantityControls {
+  display: flex;
+  align-items: center;
+  background: #f7f7f5;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 12px;
+}
+
+.quantityControls button {
+  background: white;
+  border: 1px solid #e5e5e5;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.quantityControls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantityControls span {
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.removeBtn {
+  background: transparent;
+  border: none;
+  color: #eb5757;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.removeBtn:hover {
+  background: #fff0f0;
+}
+
+/* Summary Card */
+.summaryCard {
+  background: #f7f7f5;
+  padding: 32px;
+  border-radius: 16px;
+  position: sticky;
+  top: 100px;
+}
+
+.summaryCard h2 {
+  font-size: 20px;
+  margin-bottom: 24px;
+}
+
+.summaryLine {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: #6b6f76;
+  font-size: 15px;
+}
+
+.freeText {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.totalLine {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e5e5;
+  font-size: 20px;
+  font-weight: 800;
+  color: #2f3437;
+}
+
+.errorBanner {
+  background: #fff0f0;
+  border: 1px solid #f2cfcf;
+  color: #eb5757;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.secureNote {
+  text-align: center;
+  font-size: 12px;
+  color: #a1a1a1;
+  margin-top: 16px;
+}
+
+/* Empty State */
+.emptyContainer {
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.emptyContent p {
+  color: #6b6f76;
+  margin: 12px 0 24px;
+}
+
+@media (max-width: 850px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .summaryCard {
+    position: static;
+  }
+}
