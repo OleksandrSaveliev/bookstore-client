@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 import { orderService } from "../../api/order.service";
 import { Button } from "../../components/ui/Button/Button";
 import styles from "./Cart.module.css";
@@ -9,34 +10,57 @@ import axios from "axios";
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, clearCart, totalPrice } =
     useCart();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleCheckout = async () => {
-    if (cart.length === 0) return;
+    // 1. Pre-validation
+    if (!user?.id) {
+      setError("Please log in to complete your purchase.");
+      return;
+    }
+    if (cart.length === 0) {
+      setError("Your cart is empty.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
-      const orderItems = cart.map((item) => ({
-        bookId: item.id,
-        quantity: item.quantity,
-      }));
+      /**
+       * MATCHES OrderRequestDTO.java:
+       * The backend expects a field named "items", NOT "bookItems".
+       */
+      const orderRequest = {
+        items: cart.map((item) => ({
+          bookId: Number(item.id),
+          quantity: Number(item.quantity),
+          price: Number(item.price.toFixed(2)),
+        })),
+      };
 
-      await orderService.createOrder(orderItems);
+      await orderService.createOrder(orderRequest);
 
+      // Success Path
       clearCart();
-      navigate("/orders", { state: { success: true } });
-    } catch (err) {
+      navigate("/account", { state: { activeTab: "orders", success: true } });
+    } catch (err: any) {
       if (axios.isAxiosError(err)) {
-        const message =
-          err.response?.data?.message ||
-          "Checkout failed. Please check your balance or stock.";
-        setError(message);
+        // Parse Spring Boot Validation Errors (e.g., err.response.data.items)
+        const backendData = err.response?.data;
+        const errorMessage =
+          backendData?.items || // Specific @NotEmpty message
+          backendData?.message ||
+          "Checkout failed. Ensure you have enough funds.";
+
+        setError(errorMessage);
       } else {
-        setError("An unexpected error occurred");
+        setError("An unexpected error occurred. Please try again.");
       }
+      console.error("Checkout Failed:", err.response?.data || err.message);
     } finally {
       setLoading(false);
     }
@@ -46,11 +70,11 @@ const CartPage = () => {
     return (
       <div className={styles.emptyContainer}>
         <div className={styles.emptyContent}>
-          <span style={{ fontSize: "48px" }}>🛒</span>
+          <div className={styles.emptyIcon}>🛒</div>
           <h2>Your cart is empty</h2>
-          <p>Explore our collection and find your next favorite book.</p>
+          <p>Find your next great read in our collection.</p>
           <Button
-            to="/"
+            to="/books"
             variant="primary"
           >
             Browse Books
@@ -61,7 +85,7 @@ const CartPage = () => {
   }
 
   return (
-    <div className={`${styles.container} fade-in`}>
+    <div className={styles.container}>
       <h1 className={styles.title}>Shopping Cart</h1>
 
       <div className={styles.layout}>
@@ -74,9 +98,11 @@ const CartPage = () => {
               <div className={styles.itemMain}>
                 <div className={styles.itemInfo}>
                   <h3>{item.name}</h3>
-                  <p>{item.author}</p>
+                  <p className={styles.authorText}>{item.author}</p>
                 </div>
-                <div className={styles.priceTag}>${item.price.toFixed(2)}</div>
+                <div className={styles.priceTag}>
+                  ${(item.price * item.quantity).toFixed(2)}
+                </div>
               </div>
 
               <div className={styles.itemActions}>
@@ -106,16 +132,23 @@ const CartPage = () => {
         </div>
 
         <aside className={styles.summaryCard}>
-          <h2>Summary</h2>
-          {error && <div className={styles.errorBanner}>{error}</div>}
+          <h2>Order Summary</h2>
 
-          <div className={styles.summaryLine}>
-            <span>Subtotal</span>
-            <span>${totalPrice.toFixed(2)}</span>
-          </div>
-          <div className={styles.summaryLine}>
-            <span>Shipping</span>
-            <span className={styles.freeText}>Free</span>
+          {error && (
+            <div className={styles.errorBanner}>
+              <strong>Error:</strong> {error}
+            </div>
+          )}
+
+          <div className={styles.summaryDetails}>
+            <div className={styles.summaryLine}>
+              <span>Subtotal</span>
+              <span>${totalPrice.toFixed(2)}</span>
+            </div>
+            <div className={styles.summaryLine}>
+              <span>Shipping</span>
+              <span className={styles.freeText}>FREE</span>
+            </div>
           </div>
 
           <div className={styles.totalLine}>
@@ -127,18 +160,13 @@ const CartPage = () => {
             variant="primary"
             onClick={handleCheckout}
             disabled={loading}
-            style={{
-              width: "100%",
-              marginTop: "24px",
-              padding: "16px",
-              fontSize: "16px",
-            }}
+            className={styles.checkoutBtn}
           >
             {loading ? "Processing..." : "Confirm Purchase"}
           </Button>
 
           <p className={styles.secureNote}>
-            🔒 Secure checkout powered by BookStore
+            🔒 Payment will be deducted from your wallet balance.
           </p>
         </aside>
       </div>

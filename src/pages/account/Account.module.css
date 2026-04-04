@@ -8,19 +8,21 @@
   font-size: 2rem;
   margin-bottom: 2rem;
   color: #1a1a1a;
+  font-weight: 700;
 }
 
 .tabs {
   display: flex;
   gap: 8px;
   margin-bottom: -1px;
+  z-index: 1;
 }
 
 .tabs button {
   padding: 12px 24px;
   border: 1px solid #e0e0e0;
   border-bottom: none;
-  background: #f5f5f5;
+  background: #f8f9fa;
   cursor: pointer;
   border-radius: 8px 8px 0 0;
   font-weight: 600;
@@ -39,58 +41,53 @@
   border: 1px solid #e0e0e0;
   border-radius: 0 12px 12px 12px;
   padding: 32px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
 }
 
-/* Profile Styles */
+/* Alert Colors */
+.alert {
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+.successAlert {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.errorAlert {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* Profile Layout */
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
 }
-
 .infoGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 32px;
 }
-
 .infoGroup label {
   display: block;
   font-size: 0.75rem;
-  text-transform: uppercase;
   color: #888;
-  letter-spacing: 1px;
+  text-transform: uppercase;
   margin-bottom: 8px;
-  font-weight: 700;
 }
-
 .infoGroup p {
   font-size: 1.1rem;
-  color: #333;
+  font-weight: 500;
   margin: 0;
 }
 
-.idText {
-  font-family: monospace;
-  color: #666;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 500px;
-}
-
-.formActions {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-/* Wallet Styles */
+/* Wallet Fixed Layout */
 .balanceCard {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: white;
@@ -101,50 +98,49 @@
   align-items: center;
   margin-bottom: 32px;
 }
-
-.balanceLabel {
-  font-size: 0.9rem;
-  opacity: 0.9;
-}
-
 .balanceAmount {
-  font-size: 2.5rem;
-  margin: 8px 0 0 0;
-}
-
-.walletIcon {
   font-size: 3rem;
-  opacity: 0.3;
+  font-weight: 800;
+  margin: 0;
 }
 
 .topUpForm {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 16px;
-  max-width: 450px;
+  max-width: 500px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
 }
-
-.topUpForm > div {
-  flex: 1; /* Make input take available space */
+.inputWrapper {
+  flex: 1;
 }
+.buttonWrapper {
+} /* Aligns button with input box baseline */
 
-/* General Utilities */
-.alert {
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: #e7f3ff;
-  color: #007bff;
-  margin-bottom: 24px;
-  border: 1px solid #d0e7ff;
+/* Orders Table */
+.ordersTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
 }
-
-.ordersPlaceholder {
-  text-align: center;
-  padding: 48px;
-  color: #888;
+.ordersTable th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid #eee;
+  color: #666;
+  font-size: 0.9rem;
 }
-
-.emptyIcon {
-  font-size: 3rem;
-  margin-bottom: 16px;
+.ordersTable td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+.statusBadge {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
 }

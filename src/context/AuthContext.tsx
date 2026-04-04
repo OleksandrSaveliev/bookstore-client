@@ -1,61 +1,76 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
-export interface User {
+interface AuthUser {
   id: number;
   email: string;
-  name: string;
-  balance: number;
   roles: string[];
 }
 
+export interface FullUser extends AuthUser {
+  name: string;
+  balance: number;
+}
+
 interface AuthContextType {
-  user: User | null;
-  login: (userData: User) => void;
+  // Alias 'authUser' as 'user' so existing components don't break
+  user: AuthUser | null;
+  userData: FullUser | null;
+  login: (data: AuthUser) => void;
   logout: () => void;
-  refreshUser: (updatedData: User) => void;
+  setUserData: (data: FullUser) => void;
   isAuthenticated: boolean;
-  isEmployee: boolean;
-  isClient: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem("user");
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    const saved = localStorage.getItem("user");
+    if (!saved) return null;
     try {
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch {
+      const parsed = JSON.parse(saved);
+      return parsed.id ? parsed : null;
+    } catch (e) {
+      console.error("Auth initialization failed:", e);
       return null;
     }
   });
 
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+  const [userData, setUserData] = useState<FullUser | null>(null);
+
+  const login = (data: AuthUser) => {
+    setUser(data);
+    localStorage.setItem("user", JSON.stringify(data));
   };
 
   const logout = () => {
     setUser(null);
+    setUserData(null);
     localStorage.removeItem("user");
+    // Force a reload to clear any memory-stored cart states if necessary
+    window.location.href = "/login";
   };
 
-  const refreshUser = (updatedData: User) => {
-    setUser(updatedData);
-    localStorage.setItem("user", JSON.stringify(updatedData));
-  };
-
-  const value = {
-    user,
-    login,
-    logout,
-    refreshUser,
-    isAuthenticated: !!user,
-    isEmployee: (user?.roles || []).includes("ROLE_EMPLOYEE"),
-    isClient: (user?.roles || []).includes("ROLE_CLIENT"),
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user, // Changed from authUser to user
+        userData,
+        login,
+        logout,
+        setUserData,
+        isAuthenticated: !!user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

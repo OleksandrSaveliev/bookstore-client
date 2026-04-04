@@ -1,17 +1,13 @@
 import api from "./axios";
 
-export interface OrderItemRequest {
-  bookId: number;
-  quantity: number;
-}
-
-export interface OrderRequest {
-  items: OrderItemRequest[];
-}
-
 export const orderService = {
-  createOrder: async (items: OrderItemRequest[]) => {
-    const response = await api.post("/orders", { items });
+  getByClientId: async (clientId: number) => {
+    const response = await api.get(`/orders/client/${clientId}`);
+    return response.data;
+  },
+
+  createOrder: async (orderData: any) => {
+    const response = await api.post("/orders", orderData);
     return response.data;
   },
 };
