@@ -6,8 +6,10 @@ import { Button } from "../../components/ui/Button/Button";
 import { toast } from "react-toastify";
 import styles from "./Cart.module.css";
 import axios from "axios";
+import { useTranslation } from "react-i18next"; // Added
 
 const CartPage = () => {
+  const { t } = useTranslation(); // Added
   const { cart, removeFromCart, updateQuantity, clearCart, totalPrice } =
     useCart();
   const { user } = useAuth();
@@ -16,12 +18,12 @@ const CartPage = () => {
 
   const handleCheckout = async () => {
     if (!user?.id) {
-      setError("Please log in to complete your purchase.");
-      toast.warn("Authentication required.");
+      setError(t("cart.errors.authRequired"));
+      toast.warn(t("cart.toasts.authRequired"));
       return;
     }
     if (cart.length === 0) {
-      setError("Your cart is empty.");
+      setError(t("cart.errors.empty"));
       return;
     }
 
@@ -39,7 +41,7 @@ const CartPage = () => {
 
       await orderService.createOrder(orderRequest);
 
-      toast.success("Order placed successfully!");
+      toast.success(t("cart.toasts.orderSuccess"));
       clearCart();
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -50,11 +52,11 @@ const CartPage = () => {
           (typeof backendData === "object"
             ? Object.values(backendData)[0]
             : null) ||
-          "Checkout failed. Please check your balance.";
+          t("cart.errors.checkoutFailed");
 
-        setError(errorMessage);
+        setError(errorMessage as string);
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        setError(t("cart.errors.unexpected"));
       }
     } finally {
       setLoading(false);
@@ -66,13 +68,13 @@ const CartPage = () => {
       <div className={styles.emptyContainer}>
         <div className={styles.emptyContent}>
           <div className={styles.emptyIcon}>🛒</div>
-          <h2>Your cart is empty</h2>
-          <p>Find your next great read in our collection.</p>
+          <h2>{t("cart.empty.title")}</h2>
+          <p>{t("cart.empty.subtitle")}</p>
           <Button
             to="/books"
             variant="primary"
           >
-            Browse Books
+            {t("cart.empty.browseBtn")}
           </Button>
         </div>
       </div>
@@ -81,7 +83,7 @@ const CartPage = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Shopping Cart</h1>
+      <h1 className={styles.title}>{t("cart.title")}</h1>
 
       <div className={styles.layout}>
         <div className={styles.itemList}>
@@ -119,7 +121,7 @@ const CartPage = () => {
                   className={styles.removeBtn}
                   onClick={() => removeFromCart(item.id)}
                 >
-                  Remove
+                  {t("cart.item.remove")}
                 </button>
               </div>
             </div>
@@ -127,27 +129,27 @@ const CartPage = () => {
         </div>
 
         <aside className={styles.summaryCard}>
-          <h2>Order Summary</h2>
+          <h2>{t("cart.summary.title")}</h2>
 
           {error && (
             <div className={styles.errorBanner}>
-              <strong>Notice:</strong> {error}
+              <strong>{t("cart.summary.notice")}:</strong> {error}
             </div>
           )}
 
           <div className={styles.summaryDetails}>
             <div className={styles.summaryLine}>
-              <span>Subtotal</span>
+              <span>{t("cart.summary.subtotal")}</span>
               <span>${totalPrice.toFixed(2)}</span>
             </div>
             <div className={styles.summaryLine}>
-              <span>Shipping</span>
-              <span className={styles.freeText}>FREE</span>
+              <span>{t("cart.summary.shipping")}</span>
+              <span className={styles.freeText}>{t("cart.summary.free")}</span>
             </div>
           </div>
 
           <div className={styles.totalLine}>
-            <span>Total</span>
+            <span>{t("cart.summary.total")}</span>
             <span>${totalPrice.toFixed(2)}</span>
           </div>
 
@@ -157,12 +159,12 @@ const CartPage = () => {
             disabled={loading}
             className={styles.checkoutBtn}
           >
-            {loading ? "Processing..." : "Confirm Purchase"}
+            {loading
+              ? t("cart.summary.processing")
+              : t("cart.summary.confirmBtn")}
           </Button>
 
-          <p className={styles.secureNote}>
-            🔒 Payment will be deducted from your wallet balance.
-          </p>
+          <p className={styles.secureNote}>{t("cart.summary.secureNote")}</p>
         </aside>
       </div>
     </div>

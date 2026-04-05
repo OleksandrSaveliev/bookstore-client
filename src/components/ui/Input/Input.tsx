@@ -9,7 +9,6 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className = "", ...props }, ref) => {
-    // Combine base class with error class if needed
     const inputClasses = `${styles.input} ${error ? styles.errorInput : ""} ${className}`;
 
     return (
@@ -28,5 +27,4 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   },
 );
 
-// Helpful for debugging in React DevTools
 Input.displayName = "Input";

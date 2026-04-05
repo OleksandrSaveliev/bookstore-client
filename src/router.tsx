@@ -42,10 +42,7 @@ export const router = createBrowserRouter([
             index: true,
             element: <AdminDashboard />,
           },
-          {
-            path: "inventory",
-            element: <div className="fade-in">Manage Books</div>,
-          },
+
           {
             path: "clients",
             element: <div className="fade-in">Manage Clients</div>,

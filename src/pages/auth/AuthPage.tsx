@@ -11,9 +11,10 @@ import { authService } from "../../api/auth.service";
 import { Input } from "../../components/ui/Input/Input";
 import { Button } from "../../components/ui/Button/Button";
 import styles from "./Auth.module.css";
-import axios from "axios";
+import { useTranslation } from "react-i18next"; // Added
 
 const AuthPage = () => {
+  const { t } = useTranslation(); // Added
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -57,12 +58,10 @@ const AuthPage = () => {
       login(userResponse);
       navigate(searchParams.get("redirect") || "/");
     } catch (err: any) {
-      // We grab the message directly from the backend response body
-      // or fallback to a hardcoded string if the server is down/empty
       const errorMessage =
         err.response?.data?.message ||
         err.message ||
-        "An unexpected error occurred";
+        t("auth.error.unexpected"); // Translated fallback
 
       setError(errorMessage);
     } finally {
@@ -73,11 +72,9 @@ const AuthPage = () => {
   return (
     <div className={styles.container}>
       <div className={`${styles.card} fade-in`}>
-        <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
+        <h2>{isLogin ? t("auth.login.title") : t("auth.register.title")}</h2>
         <p className={styles.subtitle}>
-          {isLogin
-            ? "Log in to manage your library."
-            : "Join our community of book lovers."}
+          {isLogin ? t("auth.login.subtitle") : t("auth.register.subtitle")}
         </p>
 
         {error && <div className={styles.error}>{error}</div>}
@@ -85,7 +82,7 @@ const AuthPage = () => {
         <form onSubmit={handleSubmit}>
           {!isLogin && (
             <Input
-              label="Full Name"
+              label={t("auth.labels.name")}
               placeholder="John Doe"
               value={formData.name}
               onChange={(e) =>
@@ -95,7 +92,7 @@ const AuthPage = () => {
             />
           )}
           <Input
-            label="Email"
+            label={t("auth.labels.email")}
             type="email"
             value={formData.email}
             onChange={(e) =>
@@ -104,7 +101,7 @@ const AuthPage = () => {
             required
           />
           <Input
-            label="Password"
+            label={t("auth.labels.password")}
             type="password"
             value={formData.password}
             onChange={(e) =>
@@ -119,17 +116,23 @@ const AuthPage = () => {
             disabled={loading}
             style={{ width: "100%" }}
           >
-            {loading ? "Processing..." : isLogin ? "Login" : "Register"}
+            {loading
+              ? t("auth.processing")
+              : isLogin
+                ? t("auth.login.submit")
+                : t("auth.register.submit")}
           </Button>
         </form>
 
         <div className={styles.footer}>
-          {isLogin ? "Don't have an account?" : "Already have an account?"}
+          {isLogin ? t("auth.login.footerText") : t("auth.register.footerText")}
           <Link
             to={isLogin ? "/signup" : "/login"}
             className={styles.link}
           >
-            {isLogin ? "Sign up" : "Log in"}
+            {isLogin
+              ? t("auth.login.footerLink")
+              : t("auth.register.footerLink")}
           </Link>
         </div>
       </div>

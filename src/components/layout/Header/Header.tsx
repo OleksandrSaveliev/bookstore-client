@@ -4,11 +4,17 @@ import { useAuth } from "../../../context/AuthContext";
 import { authService } from "../../../api/auth.service";
 import { useCart } from "../../../context/CartContext";
 import styles from "./Header.module.css";
+import { useTranslation } from "react-i18next";
 
 export const Header = () => {
   const { isAuthenticated, isEmployee, user, logout } = useAuth();
   const { cartCount } = useCart();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation(); // Destructure 't' here
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   const handleLogout = async () => {
     try {
@@ -30,11 +36,20 @@ export const Header = () => {
 
       <div className={styles.navActions}>
         <div className={styles.langSwitch}>
-          <button className={styles.langBtn}>EN</button>
-          <button className={styles.langBtn}>UA</button>
+          <button
+            className={`${styles.langBtn} ${i18n.language === "en" ? styles.activeLang : ""}`}
+            onClick={() => changeLanguage("en")}
+          >
+            EN
+          </button>
+          <button
+            className={`${styles.langBtn} ${i18n.language.startsWith("ua") ? styles.activeLang : ""}`}
+            onClick={() => changeLanguage("ua")}
+          >
+            UA
+          </button>
         </div>
 
-        {/* 1. Only show Cart to non-employees or guests */}
         {!isEmployee && (
           <Link
             to="/cart"
@@ -46,28 +61,27 @@ export const Header = () => {
                 <span className={styles.badge}>{cartCount}</span>
               )}
             </div>
-            <span className={styles.cartLabel}>Cart</span>
+            <span className={styles.cartLabel}> {t("nav.cart")}</span>
           </Link>
         )}
 
         <div className={styles.authSection}>
           {isAuthenticated ? (
             <>
-              {/* 2. Role-based Navigation Toggle */}
               {isEmployee ? (
                 <Button
                   to="/admin"
                   variant="ghost"
                   className={styles.adminBtn}
                 >
-                  Admin Panel
+                  {t("nav.adminPanel")}
                 </Button>
               ) : (
                 <Button
                   to="/account"
                   variant="ghost"
                 >
-                  My Account
+                  {t("nav.myAccount")}
                 </Button>
               )}
 
@@ -77,7 +91,7 @@ export const Header = () => {
                 onClick={handleLogout}
                 variant="primary"
               >
-                Logout
+                {t("nav.logout")}
               </Button>
             </>
           ) : (
@@ -86,13 +100,13 @@ export const Header = () => {
                 to="/login"
                 variant="ghost"
               >
-                Login
+                {t("nav.login")}
               </Button>
               <Button
                 to="/signup"
                 variant="primary"
               >
-                Join
+                {t("nav.signup")}
               </Button>
             </div>
           )}

@@ -1,0 +1,211 @@
+{
+  "home": {
+    "hero": {
+      "titlePart1": "Discover Your",
+      "titlePart2": "Next Favorite Book",
+      "subtitle": "Modern bookstore experience powered by Spring & React.",
+      "cta": "Explore Now",
+      "imageAlt": "Hero Bookstore"
+    },
+    "catalogTitle": "Featured Catalog",
+    "pagination": {
+      "prev": "← Previous",
+      "next": "Next →",
+      "info": "Page {{current}} of {{total}}"
+    }
+  },
+  "nav": {
+    "openApp": "Open App",
+    "cart": "Cart",
+    "login": "Login",
+    "signup": "Join",
+    "myAccount": "My Account",
+    "adminPanel": "Admin Panel",
+    "logout": "Logout"
+  },
+  "account": {
+    "title": "My Account",
+    "loading": "Loading...",
+    "tabs": {
+      "profile": "Profile",
+      "wallet": "Wallet",
+      "orders": "Orders"
+    },
+    "status": {
+      "syncFailed": "Sync failed.",
+      "profileUpdated": "Profile updated! ✨",
+      "updateError": "Error updating profile",
+      "fundsAdded": "Funds added! 💰",
+      "txFailed": "Transaction failed."
+    },
+    "orders": {
+      "title": "Order History",
+      "refresh": "Refresh orders",
+      "loading": "Loading your orders...",
+      "books": "books",
+      "empty": "No orders found in your history.",
+      "startShopping": "Start Shopping",
+      "table": {
+        "id": "Order ID",
+        "date": "Date",
+        "items": "Items",
+        "total": "Total Price",
+        "status": "Status"
+      },
+      "status": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      }
+    },
+    "profile": {
+      "title": "Personal Information",
+      "editBtn": "Edit Profile",
+      "saveBtn": "Save Changes",
+      "cancelBtn": "Cancel",
+      "saving": "Saving...",
+      "notAvailable": "N/A",
+      "label": {
+        "name": "Full Name",
+        "email": "Email Address",
+        "id": "Account ID"
+      }
+    },
+    "wallet": {
+      "balanceLabel": "Current Balance",
+      "inputLabel": "Add Funds to Wallet",
+      "addBtn": "Add Money",
+      "processing": "Processing..."
+    }
+  },
+  "admin": {
+    "orders": {
+      "title": "Orders Management",
+      "refreshTitle": "Refresh Orders",
+      "searchPlaceholder": "User ID...",
+      "filterBtn": "Filter",
+      "resetBtn": "Reset",
+      "userLabel": "User #{{id}}",
+      "done": "Done",
+      "table": {
+        "id": "Order ID",
+        "date": "Created At",
+        "client": "Client ID",
+        "total": "Total",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "actions": {
+        "approve": "Approve Order",
+        "cancel": "Cancel Order"
+      },
+      "toast": {
+        "loadError": "Failed to load orders.",
+        "updateSuccess": "Order #{{id}} updated",
+        "updateError": "Failed to update status"
+      }
+    },
+    "editBook": {
+      "title": "Edit Inventory Item",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "labels": {
+        "name": "Book Title",
+        "author": "Author",
+        "genre": "Genre",
+        "price": "Price ($)",
+        "pages": "Pages",
+        "language": "Language",
+        "description": "Description"
+      }
+    }
+  },
+  "auth": {
+    "processing": "Processing...",
+    "error": {
+      "unexpected": "An unexpected error occurred"
+    },
+    "labels": {
+      "name": "Full Name",
+      "email": "Email",
+      "password": "Password"
+    },
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Log in to manage your library.",
+      "submit": "Login",
+      "footerText": "Don't have an account?",
+      "footerLink": "Sign up"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join our community of book lovers.",
+      "submit": "Register",
+      "footerText": "Already have an account?",
+      "footerLink": "Log in"
+    }
+  },
+  "bookDetails": {
+    "loading": "Loading book details...",
+    "notFound": "Book not found.",
+    "by": "by",
+    "aboutTitle": "About this book",
+    "priceLabel": "Price",
+    "addToCart": "Add to Cart",
+    "meta": {
+      "language": "Language",
+      "pages": "Pages",
+      "ageGroup": "Age Group",
+      "published": "Published"
+    },
+    "admin": {
+      "editBtn": "Edit Inventory Data",
+      "updateSuccess": "Inventory updated successfully!",
+      "updateError": "Failed to update book."
+    },
+    "hints": {
+      "loginToPurchase": "Login to purchase",
+      "loginLink": "Log in",
+      "toPurchase": "to purchase"
+    },
+    "toast": {
+      "added": "{{name}} added to cart!"
+    },
+    "error": {
+      "load": "Could not load book details."
+    }
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "item": {
+      "remove": "Remove"
+    },
+    "empty": {
+      "title": "Your cart is empty",
+      "subtitle": "Find your next great read in our collection.",
+      "browseBtn": "Browse Books"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "notice": "Notice",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "free": "FREE",
+      "total": "Total",
+      "confirmBtn": "Confirm Purchase",
+      "processing": "Processing...",
+      "secureNote": "🔒 Payment will be deducted from your wallet balance."
+    },
+    "toasts": {
+      "authRequired": "Authentication required.",
+      "orderSuccess": "Order placed successfully!"
+    },
+    "errors": {
+      "authRequired": "Please log in to complete your purchase.",
+      "empty": "Your cart is empty.",
+      "checkoutFailed": "Checkout failed. Please check your balance.",
+      "unexpected": "An unexpected error occurred. Please try again."
+    }
+  }
+}

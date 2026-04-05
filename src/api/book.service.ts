@@ -22,7 +22,7 @@ export const bookService = {
 
   // EMPLOYEE only
   update: async (name: number, book: Partial<BookDTO>): Promise<BookDTO> => {
-    const response = await api.put<BookDTO>(`/books/${name}`, book);
+    const response = await api.patch<BookDTO>(`/books/${name}`, book);
     return response.data;
   },
 

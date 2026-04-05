@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./EditBookForm.module.css";
 import { Button } from "../ui/Button/Button";
 import type { BookDTO } from "../../types/book";
+import { useTranslation } from "react-i18next"; // Added
 
 interface EditBookFormProps {
   book: BookDTO;
@@ -10,6 +11,7 @@ interface EditBookFormProps {
 }
 
 const EditBookForm = ({ book, onSave, onCancel }: EditBookFormProps) => {
+  const { t } = useTranslation(); // Added
   const [formData, setFormData] = useState<Partial<BookDTO>>({ ...book });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -37,11 +39,11 @@ const EditBookForm = ({ book, onSave, onCancel }: EditBookFormProps) => {
       className={styles.form}
       onSubmit={handleSubmit}
     >
-      <h2 className={styles.title}>Edit Inventory Item</h2>
+      <h2 className={styles.title}>{t("admin.editBook.title")}</h2>
 
       <div className={styles.grid}>
         <div className={styles.field}>
-          <label>Book Title</label>
+          <label>{t("admin.editBook.labels.name")}</label>
           <input
             name="name"
             value={formData.name}
@@ -51,7 +53,7 @@ const EditBookForm = ({ book, onSave, onCancel }: EditBookFormProps) => {
         </div>
 
         <div className={styles.field}>
-          <label>Author</label>
+          <label>{t("admin.editBook.labels.author")}</label>
           <input
             name="author"
             value={formData.author}
@@ -61,7 +63,7 @@ const EditBookForm = ({ book, onSave, onCancel }: EditBookFormProps) => {
         </div>
 
         <div className={styles.field}>
-          <label>Genre</label>
+          <label>{t("admin.editBook.labels.genre")}</label>
           <input
             name="genre"
             value={formData.genre}
@@ -71,7 +73,7 @@ const EditBookForm = ({ book, onSave, onCancel }: EditBookFormProps) => {
         </div>
 
         <div className={styles.field}>
-          <label>Price ($)</label>
+          <label>{t("admin.editBook.labels.price")}</label>
           <input
             name="price"
             type="number"
@@ -83,7 +85,7 @@ const EditBookForm = ({ book, onSave, onCancel }: EditBookFormProps) => {
         </div>
 
         <div className={styles.field}>
-          <label>Pages</label>
+          <label>{t("admin.editBook.labels.pages")}</label>
           <input
             name="pages"
             type="number"
@@ -94,7 +96,7 @@ const EditBookForm = ({ book, onSave, onCancel }: EditBookFormProps) => {
         </div>
 
         <div className={styles.field}>
-          <label>Language</label>
+          <label>{t("admin.editBook.labels.language")}</label>
           <input
             name="language"
             value={formData.language}
@@ -105,7 +107,7 @@ const EditBookForm = ({ book, onSave, onCancel }: EditBookFormProps) => {
       </div>
 
       <div className={styles.field}>
-        <label>Description</label>
+        <label>{t("admin.editBook.labels.description")}</label>
         <textarea
           name="description"
           rows={5}
@@ -122,14 +124,14 @@ const EditBookForm = ({ book, onSave, onCancel }: EditBookFormProps) => {
           onClick={onCancel}
           disabled={isSubmitting}
         >
-          Cancel
+          {t("admin.editBook.cancel")}
         </Button>
         <Button
           type="submit"
           variant="primary"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Saving..." : "Save Changes"}
+          {isSubmitting ? t("admin.editBook.saving") : t("admin.editBook.save")}
         </Button>
       </div>
     </form>

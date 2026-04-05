@@ -6,8 +6,10 @@ import { ProfileTab } from "./tabs/ProfileTab";
 import { WalletTab } from "./tabs/WalletTab";
 import { OrdersTab } from "./tabs/OrdersTab";
 import styles from "./Account.module.css";
+import { useTranslation } from "react-i18next"; // Added
 
 const AccountPage = () => {
+  const { t } = useTranslation(); // Added
   const { user, userData, setUserData } = useAuth();
   const [activeTab, setActiveTab] = useState<"profile" | "wallet" | "orders">(
     "profile",
@@ -30,15 +32,14 @@ const AccountPage = () => {
       setUserData(data);
       setFormData({ name: data.name, email: data.email });
     } catch (err) {
-      setStatus({ type: "error", text: "Sync failed." });
+      setStatus({ type: "error", text: t("account.status.syncFailed") }); // Translated
     }
-  }, [user?.id, setUserData]);
+  }, [user?.id, setUserData, t]);
 
   const fetchOrders = useCallback(async () => {
     if (!user?.id) return;
     setOrdersLoading(true);
     try {
-      // Assuming getByClientId returns the order array
       const data = await orderService.getByClientId(user.id);
       setOrders(data);
     } catch (err) {
@@ -64,12 +65,12 @@ const AccountPage = () => {
     try {
       await clientService.update(user.id, formData);
       await fetchFreshData();
-      setStatus({ type: "success", text: "Profile updated! ✨" });
+      setStatus({ type: "success", text: t("account.status.profileUpdated") }); // Translated
       setIsEditing(false);
     } catch (err: any) {
       setStatus({
         type: "error",
-        text: err.response?.data?.message || "Error updating profile",
+        text: err.response?.data?.message || t("account.status.updateError"), // Translated
       });
     } finally {
       setLoading(false);
@@ -89,33 +90,35 @@ const AccountPage = () => {
         balance: (userData?.balance || 0) + amount,
       });
       await fetchFreshData();
-      setStatus({ type: "success", text: "Funds added! 💰" });
+      setStatus({ type: "success", text: t("account.status.fundsAdded") }); // Translated
       setTopUpAmount("");
     } catch (err: any) {
-      setStatus({ type: "error", text: "Transaction failed." });
+      setStatus({ type: "error", text: t("account.status.txFailed") }); // Translated
     } finally {
       setLoading(false);
     }
   };
 
   if (!userData)
-    return <div className={styles.loadingContainer}>Loading...</div>;
+    return (
+      <div className={styles.loadingContainer}>{t("account.loading")}</div>
+    ); // Translated
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>My Account</h1>
+      <h1 className={styles.title}>{t("account.title")}</h1>
       <div className={styles.tabs}>
-        {(["profile", "wallet", "orders"] as const).map((t) => (
+        {(["profile", "wallet", "orders"] as const).map((tKey) => (
           <button
-            key={t}
-            className={activeTab === t ? styles.activeTab : ""}
+            key={tKey}
+            className={activeTab === tKey ? styles.activeTab : ""}
             onClick={() => {
-              setActiveTab(t);
+              setActiveTab(tKey);
               setStatus(null);
               setIsEditing(false);
             }}
           >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+            {t(`account.tabs.${tKey}`)} {/* Dynamic tab translation */}
           </button>
         ))}
       </div>

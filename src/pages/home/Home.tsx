@@ -4,8 +4,10 @@ import { BookCard } from "../../components/books/BookCard";
 import { Button } from "../../components/ui/Button/Button";
 import styles from "./Home.module.css";
 import type { BookDTO } from "../../types/book";
+import { useTranslation } from "react-i18next"; // Added
 
 const HomePage = () => {
+  const { t } = useTranslation(); // Added
   const [books, setBooks] = useState<BookDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -52,25 +54,24 @@ const HomePage = () => {
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <h1>
-            Discover Your <br /> Next Favorite Book
+            {/* Using Trans component or splitting for the <br /> */}
+            {t("home.hero.titlePart1")} <br /> {t("home.hero.titlePart2")}
           </h1>
-          <p className="subtitle">
-            Modern bookstore experience powered by Spring & React.
-          </p>
+          <p className="subtitle">{t("home.hero.subtitle")}</p>
           <div style={{ display: "flex", gap: "12px" }}>
-            <Button variant="primary">Explore Now</Button>
+            <Button variant="primary">{t("home.hero.cta")}</Button>
           </div>
         </div>
         <div className={styles.heroImage}>
           <img
-            src="/public/hero-image.webp"
-            alt="Hero"
+            src="/hero-image.webp" // Removed /public/ as Vite serves from root
+            alt={t("home.hero.imageAlt")}
           />
         </div>
       </section>
 
       <section>
-        <h2 className={styles.sectionTitle}>Featured Catalog</h2>
+        <h2 className={styles.sectionTitle}>{t("home.catalogTitle")}</h2>
 
         <div className={styles.grid}>
           {books.map((book) => (
@@ -87,18 +88,23 @@ const HomePage = () => {
             onClick={handlePrev}
             disabled={currentPage === 0 || loading}
           >
-            ← Previous
+            {t("home.pagination.prev")}
           </Button>
 
           <span className={styles.pageInfo}>
-            {loading ? "..." : `Page ${currentPage + 1} of ${totalPages}`}
+            {loading
+              ? "..."
+              : t("home.pagination.info", {
+                  current: currentPage + 1,
+                  total: totalPages,
+                })}
           </span>
 
           <Button
             onClick={handleNext}
             disabled={currentPage >= totalPages - 1 || loading}
           >
-            Next →
+            {t("home.pagination.next")}
           </Button>
         </div>
       </section>

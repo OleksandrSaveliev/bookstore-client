@@ -4,8 +4,10 @@ import { toast } from "react-toastify";
 import Pagination from "../../components/ui/Pagination/Pagination";
 import styles from "./AdminDashboard.module.css";
 import type { OrderResponseDTO } from "../../types/orders";
+import { useTranslation } from "react-i18next"; // Added
 
 const AdminDashboard = () => {
+  const { t, i18n } = useTranslation(); // Added
   const [orders, setOrders] = useState<OrderResponseDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -27,7 +29,7 @@ const AdminDashboard = () => {
       setOrders(data.content || []);
       setTotalPages(data.totalPages || 0);
     } catch (err) {
-      toast.error("Failed to load orders.");
+      toast.error(t("admin.orders.toast.loadError")); // Translated
     } finally {
       setLoading(false);
     }
@@ -51,10 +53,10 @@ const AdminDashboard = () => {
   const handleStatusUpdate = async (id: number, newStatus: string) => {
     try {
       await orderService.updateOrderStatus(id, newStatus);
-      toast.success(`Order #${id} updated`);
+      toast.success(t("admin.orders.toast.updateSuccess", { id })); // Interpolated
       await loadOrders();
     } catch (err) {
-      toast.error("Failed to update status");
+      toast.error(t("admin.orders.toast.updateError")); // Translated
     }
   };
 
@@ -63,11 +65,11 @@ const AdminDashboard = () => {
       <header className={styles.header}>
         <div className={styles.headerText}>
           <div className={styles.titleRow}>
-            <h1>Orders Management</h1>
+            <h1>{t("admin.orders.title")}</h1>
             <button
               className={`${styles.refreshBtn} ${loading ? styles.spinning : ""}`}
               onClick={loadOrders}
-              title="Refresh Orders"
+              title={t("admin.orders.refreshTitle")}
               disabled={loading}
             >
               ↻
@@ -80,7 +82,7 @@ const AdminDashboard = () => {
         >
           <input
             type="number"
-            placeholder="User ID..."
+            placeholder={t("admin.orders.searchPlaceholder")}
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}
           />
@@ -88,7 +90,7 @@ const AdminDashboard = () => {
             type="submit"
             className={styles.searchBtn}
           >
-            Filter
+            {t("admin.orders.filterBtn")}
           </button>
           {activeSearch && (
             <button
@@ -99,7 +101,7 @@ const AdminDashboard = () => {
                 setActiveSearch("");
               }}
             >
-              Reset
+              {t("admin.orders.resetBtn")}
             </button>
           )}
         </form>
@@ -109,17 +111,19 @@ const AdminDashboard = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Order ID</th>
+              <th>{t("admin.orders.table.id")}</th>
               <th
                 onClick={toggleSort}
                 className={styles.sortableHeader}
               >
-                Created At {sortDir === "desc" ? "▼" : "▲"}
+                {t("admin.orders.table.date")} {sortDir === "desc" ? "▼" : "▲"}
               </th>
-              <th>Client ID</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th className={styles.actionsHeader}>Actions</th>
+              <th>{t("admin.orders.table.client")}</th>
+              <th>{t("admin.orders.table.total")}</th>
+              <th>{t("admin.orders.table.status")}</th>
+              <th className={styles.actionsHeader}>
+                {t("admin.orders.table.actions")}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -130,7 +134,9 @@ const AdminDashboard = () => {
                   className={styles.tableRow}
                 >
                   <td className={styles.orderId}>#{order.id}</td>
-                  <td>{new Date(order.createdAt).toLocaleString()}</td>
+                  <td>
+                    {new Date(order.createdAt).toLocaleString(i18n.language)}
+                  </td>
                   <td>
                     <button
                       className={styles.clientLink}
@@ -139,7 +145,7 @@ const AdminDashboard = () => {
                         setActiveSearch(order.clientId.toString());
                       }}
                     >
-                      User #{order.clientId}
+                      {t("admin.orders.userLabel", { id: order.clientId })}
                     </button>
                   </td>
                   <td className={styles.amount}>${order.price?.toFixed(2)}</td>
@@ -147,7 +153,7 @@ const AdminDashboard = () => {
                     <span
                       className={`${styles.statusBadge} ${styles[order.status.toLowerCase()]}`}
                     >
-                      {order.status}
+                      {t(`account.orders.status.${order.status.toLowerCase()}`)}
                     </span>
                   </td>
                   <td className={styles.actionsCell}>
@@ -158,6 +164,7 @@ const AdminDashboard = () => {
                           onClick={() =>
                             handleStatusUpdate(order.id, "COMPLETED")
                           }
+                          title={t("admin.orders.actions.approve")}
                         >
                           ✓
                         </button>
@@ -166,12 +173,15 @@ const AdminDashboard = () => {
                           onClick={() =>
                             handleStatusUpdate(order.id, "CANCELLED")
                           }
+                          title={t("admin.orders.actions.cancel")}
                         >
                           ✕
                         </button>
                       </div>
                     ) : (
-                      <span className={styles.finalized}>Done</span>
+                      <span className={styles.finalized}>
+                        {t("admin.orders.done")}
+                      </span>
                     )}
                   </td>
                 </tr>
