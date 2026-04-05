@@ -1,4 +1,3 @@
-// src/components/layout/Header/Header.tsx
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../ui/Button/Button";
 import { useAuth } from "../../../context/AuthContext";
@@ -8,10 +7,8 @@ import styles from "./Header.module.css";
 
 export const Header = () => {
   const { isAuthenticated, isEmployee, user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  // 1. Destructure cartCount instead of just cart
   const { cartCount } = useCart();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
@@ -37,7 +34,7 @@ export const Header = () => {
           <button className={styles.langBtn}>UA</button>
         </div>
 
-        {/* CART: Only show if NOT an employee */}
+        {/* 1. Only show Cart to non-employees or guests */}
         {!isEmployee && (
           <Link
             to="/cart"
@@ -45,7 +42,6 @@ export const Header = () => {
           >
             <div className={styles.cartIconWrapper}>
               🛒
-              {/* 2. Use cartCount here so the badge reflects quantities */}
               {cartCount > 0 && (
                 <span className={styles.badge}>{cartCount}</span>
               )}
@@ -54,49 +50,53 @@ export const Header = () => {
           </Link>
         )}
 
-        {isAuthenticated ? (
-          <>
-            {isEmployee ? (
+        <div className={styles.authSection}>
+          {isAuthenticated ? (
+            <>
+              {/* 2. Role-based Navigation Toggle */}
+              {isEmployee ? (
+                <Button
+                  to="/admin"
+                  variant="ghost"
+                  className={styles.adminBtn}
+                >
+                  Admin Panel
+                </Button>
+              ) : (
+                <Button
+                  to="/account"
+                  variant="ghost"
+                >
+                  My Account
+                </Button>
+              )}
+
+              <span className={styles.userEmail}>{user?.email}</span>
+
               <Button
-                to="/admin"
+                onClick={handleLogout}
+                variant="primary"
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <div className={styles.guestActions}>
+              <Button
+                to="/login"
                 variant="ghost"
               >
-                Admin
+                Login
               </Button>
-            ) : (
               <Button
-                to="/account"
-                variant="ghost"
+                to="/signup"
+                variant="primary"
               >
-                My Account
+                Join
               </Button>
-            )}
-
-            <span className={styles.userEmail}>{user?.email}</span>
-
-            <Button
-              onClick={handleLogout}
-              variant="primary"
-            >
-              Logout
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              to="/login"
-              variant="ghost"
-            >
-              Login
-            </Button>
-            <Button
-              to="/signup"
-              variant="primary"
-            >
-              Join
-            </Button>
-          </>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "../../../components/ui/Button/Button";
 import styles from "../Account.module.css";
 
@@ -12,7 +11,8 @@ interface BookItemDTO {
 interface OrderResponseDTO {
   id: number;
   clientId: number;
-  orderDate: string; // LocalDateTime comes as string in JSON
+  createdAt: string;
+  status: "PENDING" | "COMPLETED" | "CANCELLED";
   price: number;
   bookItems: BookItemDTO[];
 }
@@ -20,16 +20,28 @@ interface OrderResponseDTO {
 export const OrdersTab = ({
   orders,
   loading,
+  onRefresh,
 }: {
   orders: OrderResponseDTO[];
   loading: boolean;
+  onRefresh: () => void;
 }) => (
   <div className={styles.ordersSection}>
     <div className={styles.headerRow}>
-      <h3>Order History</h3>
+      <div className={styles.titleWithRefresh}>
+        <h3>Order History</h3>
+        <button
+          className={`${styles.refreshBtn} ${loading ? styles.spinning : ""}`}
+          onClick={onRefresh}
+          disabled={loading}
+          title="Refresh orders"
+        >
+          ↻
+        </button>
+      </div>
     </div>
 
-    {loading ? (
+    {loading && orders.length === 0 ? (
       <div className={styles.loadingPlaceholder}>Loading your orders...</div>
     ) : orders.length > 0 ? (
       <div className={styles.ordersTableWrapper}>
@@ -47,7 +59,7 @@ export const OrdersTab = ({
             {orders.map((order) => (
               <tr key={order.id}>
                 <td className={styles.idText}>#{order.id}</td>
-                <td>{new Date(order.orderDate).toLocaleDateString()}</td>
+                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                 <td>
                   <span className={styles.itemCount}>
                     {order.bookItems?.reduce(
@@ -59,8 +71,11 @@ export const OrdersTab = ({
                 </td>
                 <td className={styles.priceText}>${order.price?.toFixed(2)}</td>
                 <td>
-                  {/* Since Status isn't in your DTO yet, we'll hardcode "COMPLETED" or "PENDING" */}
-                  <span className={styles.statusBadge}>COMPLETED</span>
+                  <span
+                    className={`${styles.statusBadge} ${styles[order.status.toLowerCase()]}`}
+                  >
+                    {order.status}
+                  </span>
                 </td>
               </tr>
             ))}

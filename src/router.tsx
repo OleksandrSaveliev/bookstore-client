@@ -7,6 +7,7 @@ import BookDetailsPage from "./pages/books/BookDetailsPage";
 import CartPage from "./pages/cart/CartPage";
 import AuthPage from "./pages/auth/AuthPage";
 import AccountPage from "./pages/account/AccountPage";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 export const router = createBrowserRouter([
   {
@@ -39,7 +40,7 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <div className="fade-in">Admin Dashboard</div>,
+            element: <AdminDashboard />,
           },
           {
             path: "inventory",
@@ -48,10 +49,6 @@ export const router = createBrowserRouter([
           {
             path: "clients",
             element: <div className="fade-in">Manage Clients</div>,
-          },
-          {
-            path: "all-orders",
-            element: <div className="fade-in">View All Orders</div>,
           },
         ],
       },

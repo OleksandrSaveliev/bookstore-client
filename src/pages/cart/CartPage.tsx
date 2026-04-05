@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { orderService } from "../../api/order.service";
 import { Button } from "../../components/ui/Button/Button";
+import { toast } from "react-toastify";
 import styles from "./Cart.module.css";
 import axios from "axios";
 
@@ -13,12 +13,11 @@ const CartPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleCheckout = async () => {
-    // 1. Pre-validation
     if (!user?.id) {
       setError("Please log in to complete your purchase.");
+      toast.warn("Authentication required.");
       return;
     }
     if (cart.length === 0) {
@@ -30,10 +29,6 @@ const CartPage = () => {
     setError("");
 
     try {
-      /**
-       * MATCHES OrderRequestDTO.java:
-       * The backend expects a field named "items", NOT "bookItems".
-       */
       const orderRequest = {
         items: cart.map((item) => ({
           bookId: Number(item.id),
@@ -44,23 +39,23 @@ const CartPage = () => {
 
       await orderService.createOrder(orderRequest);
 
-      // Success Path
+      toast.success("Order placed successfully!");
       clearCart();
-      navigate("/account", { state: { activeTab: "orders", success: true } });
-    } catch (err: any) {
+    } catch (err) {
       if (axios.isAxiosError(err)) {
-        // Parse Spring Boot Validation Errors (e.g., err.response.data.items)
         const backendData = err.response?.data;
+
         const errorMessage =
-          backendData?.items || // Specific @NotEmpty message
           backendData?.message ||
-          "Checkout failed. Ensure you have enough funds.";
+          (typeof backendData === "object"
+            ? Object.values(backendData)[0]
+            : null) ||
+          "Checkout failed. Please check your balance.";
 
         setError(errorMessage);
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
-      console.error("Checkout Failed:", err.response?.data || err.message);
     } finally {
       setLoading(false);
     }
@@ -136,7 +131,7 @@ const CartPage = () => {
 
           {error && (
             <div className={styles.errorBanner}>
-              <strong>Error:</strong> {error}
+              <strong>Notice:</strong> {error}
             </div>
           )}
 

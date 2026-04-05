@@ -38,10 +38,11 @@ const AccountPage = () => {
     if (!user?.id) return;
     setOrdersLoading(true);
     try {
+      // Assuming getByClientId returns the order array
       const data = await orderService.getByClientId(user.id);
       setOrders(data);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch orders:", err);
     } finally {
       setOrdersLoading(false);
     }
@@ -57,17 +58,18 @@ const AccountPage = () => {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user?.id) return;
     setLoading(true);
     setStatus(null);
     try {
-      await clientService.update(user!.id!, formData);
+      await clientService.update(user.id, formData);
       await fetchFreshData();
       setStatus({ type: "success", text: "Profile updated! ✨" });
       setIsEditing(false);
     } catch (err: any) {
       setStatus({
         type: "error",
-        text: err.response?.data?.message || "Error",
+        text: err.response?.data?.message || "Error updating profile",
       });
     } finally {
       setLoading(false);
@@ -76,11 +78,14 @@ const AccountPage = () => {
 
   const handleAddFunds = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user?.id) return;
     const amount = parseFloat(topUpAmount);
+    if (isNaN(amount) || amount <= 0) return;
+
     setLoading(true);
     setStatus(null);
     try {
-      await clientService.update(user!.id!, {
+      await clientService.update(user.id, {
         balance: (userData?.balance || 0) + amount,
       });
       await fetchFreshData();
@@ -100,12 +105,12 @@ const AccountPage = () => {
     <div className={styles.container}>
       <h1 className={styles.title}>My Account</h1>
       <div className={styles.tabs}>
-        {["profile", "wallet", "orders"].map((t) => (
+        {(["profile", "wallet", "orders"] as const).map((t) => (
           <button
             key={t}
             className={activeTab === t ? styles.activeTab : ""}
             onClick={() => {
-              setActiveTab(t as any);
+              setActiveTab(t);
               setStatus(null);
               setIsEditing(false);
             }}
@@ -151,6 +156,7 @@ const AccountPage = () => {
           <OrdersTab
             orders={orders}
             loading={ordersLoading}
+            onRefresh={fetchOrders}
           />
         )}
       </div>

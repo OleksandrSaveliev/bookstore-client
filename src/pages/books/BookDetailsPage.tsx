@@ -1,59 +1,69 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link, useLocation } from "react-router-dom"; // Added Link
+import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { bookService } from "../../api/book.service";
 import { Button } from "../../components/ui/Button/Button";
 import styles from "./BookDetails.module.css";
 import { useCart } from "../../context/CartContext";
-import { useAuth } from "../../context/AuthContext"; // 1. Import useAuth
+import { useAuth } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 import type { BookDTO } from "../../types/book";
+import EditBookForm from "../../components/books/EditBookForm"; // Import the new component
 
 const BookDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<BookDTO | null>(null);
   const [loading, setLoading] = useState(true);
-  const [added, setAdded] = useState(false); // Feedback state
+  const [isEditing, setIsEditing] = useState(false); // New State
 
   const navigate = useNavigate();
   const location = useLocation();
   const { addToCart } = useCart();
-  const { isAuthenticated, isEmployee } = useAuth(); // 2. Get auth/role status
+  const { isAuthenticated, isEmployee } = useAuth();
 
   useEffect(() => {
-    const fetchBook = async () => {
-      try {
-        if (id) {
-          const data = await bookService.getById(Number(id));
-          setBook(data);
-        }
-      } catch (err) {
-        console.error("Error fetching book:", err);
-        navigate("/");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchBook();
-  }, [id, navigate]);
+  }, [id]);
 
-  const handleAddToCart = () => {
-    if (book) {
-      addToCart(book);
-      setAdded(true);
-      setTimeout(() => setAdded(false), 2000);
+  const fetchBook = async () => {
+    try {
+      if (id) {
+        const data = await bookService.getById(Number(id));
+        setBook(data);
+      }
+    } catch (err) {
+      toast.error("Could not load book details.");
+      navigate("/");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdate = async (updatedData: Partial<BookDTO>) => {
+    try {
+      await bookService.update(Number(id), updatedData);
+      toast.success("Inventory updated successfully!");
+      setIsEditing(false);
+      await fetchBook(); // Refresh data
+    } catch (err) {
+      toast.error("Failed to update book.");
     }
   };
 
   if (loading) return <div className="container">Loading book details...</div>;
   if (!book) return <div className="container">Book not found.</div>;
 
-  // 3. Determine if the button should be disabled
-  // Logic: Disable if not logged in OR if user is an employee (employees don't buy)
-  const isDisableDisabled = !isAuthenticated || isEmployee;
-  const tooltipText = !isAuthenticated
-    ? "Please log in to add items to your cart"
-    : isEmployee
-      ? "Employees cannot make purchases"
-      : "";
+  // If in edit mode, show form instead of details
+  if (isEditing) {
+    return (
+      <div className={`${styles.container} fade-in`}>
+        <EditBookForm
+          book={book}
+          onSave={handleUpdate}
+          onCancel={() => setIsEditing(false)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.container} fade-in`}>
@@ -61,6 +71,7 @@ const BookDetailsPage = () => {
         <div className={styles.info}>
           <span className={styles.tag}>{book.genre}</span>
           <h1>{book.name}</h1>
+          {/* ... existing details ... */}
           <p className={styles.author}>by {book.author}</p>
 
           <div className={styles.metaGrid}>
@@ -92,20 +103,32 @@ const BookDetailsPage = () => {
             </div>
 
             <div className={styles.buttonWrapper}>
-              <Button
-                variant="primary"
-                onClick={handleAddToCart}
-                disabled={isDisableDisabled}
-                title={tooltipText} // 4. Hover prompt
-                style={{
-                  minWidth: "200px",
-                  cursor: isDisableDisabled ? "not-allowed" : "pointer",
-                }}
-              >
-                {added ? "✓ Added!" : "Add to Cart"}
-              </Button>
+              {isEmployee ? (
+                // Employee View: Show Edit Button
+                <Button
+                  variant="primary"
+                  onClick={() => setIsEditing(true)}
+                  style={{ minWidth: "200px" }}
+                >
+                  Edit Inventory Data
+                </Button>
+              ) : (
+                // Customer View: Show Add to Cart
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    addToCart(book);
+                    toast.success(`${book.name} added to cart!`);
+                  }}
+                  disabled={!isAuthenticated}
+                  title={!isAuthenticated ? "Login to purchase" : ""}
+                  style={{ minWidth: "200px" }}
+                >
+                  Add to Cart
+                </Button>
+              )}
 
-              {/* 5. Conditional Login Prompt */}
+              {/* ... hints ... */}
               {!isAuthenticated && (
                 <p className={styles.authHint}>
                   <Link
@@ -113,7 +136,7 @@ const BookDetailsPage = () => {
                   >
                     Log in
                   </Link>{" "}
-                  to purchase this book
+                  to purchase
                 </p>
               )}
             </div>

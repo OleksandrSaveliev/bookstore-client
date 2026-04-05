@@ -1,7 +1,14 @@
+/* ==========================================================================
+   1. Page Layout & Tabs
+   ========================================================================== */
 .container {
   max-width: 900px;
   margin: 40px auto;
   padding: 0 20px;
+  font-family:
+    "Inter",
+    -apple-system,
+    sans-serif;
 }
 
 .title {
@@ -15,6 +22,7 @@
   display: flex;
   gap: 8px;
   margin-bottom: -1px;
+  position: relative;
   z-index: 1;
 }
 
@@ -26,7 +34,7 @@
   cursor: pointer;
   border-radius: 8px 8px 0 0;
   font-weight: 600;
-  color: #666;
+  color: #64748b;
   transition: all 0.2s;
 }
 
@@ -34,23 +42,28 @@
   background: #fff;
   color: #007bff;
   border-top: 3px solid #007bff;
+  padding-top: 10px;
 }
 
+/* ==========================================================================
+   2. Main Card & Common UI
+   ========================================================================== */
 .card {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 0 12px 12px 12px;
   padding: 32px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  min-height: 400px;
 }
 
-/* Alert Colors */
 .alert {
   padding: 14px;
   border-radius: 8px;
   margin-bottom: 24px;
   font-weight: 500;
 }
+
 .successAlert {
   background: #ecfdf5;
   color: #065f46;
@@ -62,32 +75,75 @@
   border: 1px solid #fecaca;
 }
 
-/* Profile Layout */
+/* ==========================================================================
+   3. Profile Tab (Fixed Grid & Form)
+   ========================================================================== */
+.profileContainer {
+  animation: fadeIn 0.3s ease;
+}
+
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f8fafc;
 }
+
+.headerRow h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1e293b;
+}
+
 .infoGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
 }
+
 .infoGroup label {
   display: block;
   font-size: 0.75rem;
-  color: #888;
+  color: #94a3b8;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
+
 .infoGroup p {
   font-size: 1.1rem;
   font-weight: 500;
   margin: 0;
+  color: #1e293b;
 }
 
-/* Wallet Fixed Layout */
+.idText {
+  font-family: "JetBrains Mono", monospace;
+  color: #64748b;
+  font-size: 0.95rem !important;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 500px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* ==========================================================================
+   4. Wallet Tab
+   ========================================================================== */
 .balanceCard {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: white;
@@ -98,6 +154,7 @@
   align-items: center;
   margin-bottom: 32px;
 }
+
 .balanceAmount {
   font-size: 3rem;
   font-weight: 800;
@@ -109,38 +166,119 @@
   align-items: center;
   gap: 16px;
   max-width: 500px;
-  padding: 20px;
+  padding: 24px;
   background: #f8fafc;
   border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }
-.inputWrapper {
-  flex: 1;
-}
-.buttonWrapper {
-} /* Aligns button with input box baseline */
 
-/* Orders Table */
+/* ==========================================================================
+   5. Orders Tab & Table
+   ========================================================================== */
+.ordersTableWrapper {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
 .ordersTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
 }
+
 .ordersTable th {
   text-align: left;
   padding: 12px;
-  border-bottom: 2px solid #eee;
-  color: #666;
-  font-size: 0.9rem;
+  border-bottom: 2px solid #f1f5f9;
+  color: #64748b;
+  font-size: 0.85rem;
+  text-transform: uppercase;
 }
+
 .ordersTable td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
+  padding: 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
 }
+
 .statusBadge {
-  background: #e0f2fe;
-  color: #0369a1;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 9999px; /* Pill shape */
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.025em;
+  border: 1px solid transparent;
+}
+
+/* Specific Status Colors - Mapping to order.status.toLowerCase() */
+.pending {
+  background-color: #fff7ed; /* Light Orange */
+  color: #c2410c;
+  border-color: #ffedd5;
+}
+
+.completed {
+  background-color: #f0fdf4; /* Light Green */
+  color: #15803d;
+  border-color: #dcfce7;
+}
+
+.cancelled {
+  background-color: #fef2f2; /* Light Red */
+  color: #b91c1c;
+  border-color: #fee2e2;
+}
+
+/* ==========================================================================
+   6. Icons & Animations
+   ========================================================================== */
+.titleWithRefresh {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.refreshBtn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

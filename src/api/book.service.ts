@@ -21,7 +21,7 @@ export const bookService = {
   },
 
   // EMPLOYEE only
-  update: async (name: string, book: BookDTO): Promise<BookDTO> => {
+  update: async (name: number, book: Partial<BookDTO>): Promise<BookDTO> => {
     const response = await api.put<BookDTO>(`/books/${name}`, book);
     return response.data;
   },
