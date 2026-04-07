@@ -1,5 +1,5 @@
-// Pagination.tsx
 import styles from "./Pagination.module.css";
+import { useTranslation } from "react-i18next";
 
 interface PaginationProps {
   currentPage: number;
@@ -12,6 +12,7 @@ const Pagination = ({
   totalPages,
   onPageChange,
 }: PaginationProps) => {
+  const { t } = useTranslation();
   if (totalPages <= 1) return null;
 
   return (
@@ -21,17 +22,20 @@ const Pagination = ({
         onClick={() => onPageChange(currentPage - 1)}
         className={styles.pageBtn}
       >
-        &larr; Previous
+        {t("home.pagination.prev")}
       </button>
       <span className={styles.pageInfo}>
-        Page <strong>{currentPage + 1}</strong> of {totalPages}
+        {t("home.pagination.info", {
+          current: currentPage + 1,
+          total: totalPages,
+        })}
       </span>
       <button
         disabled={currentPage >= totalPages - 1}
         onClick={() => onPageChange(currentPage + 1)}
         className={styles.pageBtn}
       >
-        Next &rarr;
+        {t("home.pagination.next")}
       </button>
     </div>
   );

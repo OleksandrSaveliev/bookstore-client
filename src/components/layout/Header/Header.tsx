@@ -44,7 +44,7 @@ export const Header = () => {
           </button>
           <button
             className={`${styles.langBtn} ${i18n.language.startsWith("ua") ? styles.activeLang : ""}`}
-            onClick={() => changeLanguage("ua")}
+            onClick={() => changeLanguage("uk")}
           >
             UA
           </button>

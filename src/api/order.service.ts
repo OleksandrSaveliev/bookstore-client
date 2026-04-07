@@ -7,25 +7,30 @@ export const orderService = {
     return response.data;
   },
 
+  getClientOrders: async () => {
+    const response = await api.get(`/orders/my`);
+    return response.data;
+  },
+
   createOrder: async (orderData: any) => {
     const response = await api.post("/orders", orderData);
     return response.data;
   },
 
   getAllOrders: async (
-    page = 0,
-    size = 10,
-    search = "",
-    sortBy = "orderDate",
-    direction = "desc",
-  ): Promise<{ content: OrderResponseDTO[]; totalPages: number }> => {
+    page: number,
+    size: number,
+    sortBy: string,
+    direction: string,
+    search?: string,
+  ) => {
     const response = await api.get("/orders", {
       params: {
-        page,
-        size,
-        search: search || undefined,
-        sortBy,
-        direction,
+        page: page,
+        size: size,
+        sortBy: sortBy,
+        direction: direction,
+        search: search || "",
       },
     });
     return response.data;

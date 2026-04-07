@@ -11,10 +11,10 @@ import { authService } from "../../api/auth.service";
 import { Input } from "../../components/ui/Input/Input";
 import { Button } from "../../components/ui/Button/Button";
 import styles from "./Auth.module.css";
-import { useTranslation } from "react-i18next"; // Added
+import { useTranslation } from "react-i18next";
 
 const AuthPage = () => {
-  const { t } = useTranslation(); // Added
+  const { t } = useTranslation();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -27,11 +27,14 @@ const AuthPage = () => {
     password: "",
     name: "",
   });
+
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setError("");
+    setFieldErrors({});
   }, [isLogin]);
 
   if (isAuthenticated) {
@@ -48,6 +51,7 @@ const AuthPage = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setFieldErrors({});
 
     try {
       const userResponse = isLogin
@@ -58,12 +62,13 @@ const AuthPage = () => {
       login(userResponse);
       navigate(searchParams.get("redirect") || "/");
     } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message ||
-        err.message ||
-        t("auth.error.unexpected"); // Translated fallback
+      const data = err.response?.data;
 
-      setError(errorMessage);
+      if (data?.errors) {
+        setFieldErrors(data.errors);
+      } else {
+        setError(data?.message || err.message || t("auth.error.unexpected"));
+      }
     } finally {
       setLoading(false);
     }
@@ -88,7 +93,7 @@ const AuthPage = () => {
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              required
+              error={fieldErrors.name}
             />
           )}
           <Input
@@ -98,7 +103,7 @@ const AuthPage = () => {
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
-            required
+            error={fieldErrors.email}
           />
           <Input
             label={t("auth.labels.password")}
@@ -107,14 +112,14 @@ const AuthPage = () => {
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
-            required
+            error={fieldErrors.password}
           />
 
           <Button
             variant="primary"
             type="submit"
             disabled={loading}
-            style={{ width: "100%" }}
+            style={{ width: "100%", marginTop: "1rem" }}
           >
             {loading
               ? t("auth.processing")

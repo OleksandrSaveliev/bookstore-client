@@ -8,10 +8,10 @@ import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import type { BookDTO } from "../../types/book";
 import EditBookForm from "../../components/books/EditBookForm";
-import { useTranslation } from "react-i18next"; // Added
+import { useTranslation } from "react-i18next";
 
 const BookDetailsPage = () => {
-  const { t } = useTranslation(); // Added
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<BookDTO | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,31 +23,31 @@ const BookDetailsPage = () => {
   const { isAuthenticated, isEmployee } = useAuth();
 
   useEffect(() => {
-    fetchBook();
-  }, [id]);
-
-  const fetchBook = async () => {
-    try {
-      if (id) {
-        const data = await bookService.getById(Number(id));
-        setBook(data);
+    const fetchBook = async () => {
+      try {
+        if (id) {
+          const data = await bookService.getById(Number(id));
+          setBook(data);
+        }
+      } catch (err) {
+        toast.error(t("bookDetails.error.load"));
+        navigate("/app/books");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      toast.error(t("bookDetails.error.load")); // Translated
-      navigate("/");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    fetchBook();
+  }, [id, navigate, t]);
 
   const handleUpdate = async (updatedData: Partial<BookDTO>) => {
     try {
       await bookService.update(Number(id), updatedData);
-      toast.success(t("bookDetails.admin.updateSuccess")); // Translated
+      toast.success(t("bookDetails.admin.updateSuccess"));
       setIsEditing(false);
-      await fetchBook();
+      const data = await bookService.getById(Number(id));
+      setBook(data);
     } catch (err) {
-      toast.error(t("bookDetails.admin.updateError")); // Translated
+      toast.error(t("bookDetails.admin.updateError"));
     }
   };
 
@@ -75,12 +75,13 @@ const BookDetailsPage = () => {
           <span className={styles.tag}>{book.genre}</span>
           <h1>{book.name}</h1>
           <p className={styles.author}>
-            {t("bookDetails.byAuthor")} {book.author}
+            {t("bookDetails.by")} {book.author}
           </p>
 
           <div className={styles.metaGrid}>
             <div>
-              <strong>{t("bookDetails.meta.language")}:</strong> {book.language}
+              <strong>{t("bookDetails.meta.language")}:</strong>{" "}
+              {t(`catalog.languages.${book.language}`)}
             </div>
             <div>
               <strong>{t("bookDetails.meta.pages")}:</strong> {book.pages}
@@ -128,9 +129,6 @@ const BookDetailsPage = () => {
                     );
                   }}
                   disabled={!isAuthenticated}
-                  title={
-                    !isAuthenticated ? t("bookDetails.hints.loginRequired") : ""
-                  }
                   style={{ minWidth: "200px" }}
                 >
                   {t("bookDetails.addToCart")}

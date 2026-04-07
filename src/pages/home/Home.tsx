@@ -7,7 +7,7 @@ import type { BookDTO } from "../../types/book";
 import { useTranslation } from "react-i18next"; // Added
 
 const HomePage = () => {
-  const { t } = useTranslation(); // Added
+  const { t } = useTranslation();
   const [books, setBooks] = useState<BookDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -17,7 +17,7 @@ const HomePage = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const data = await bookService.getAll(currentPage, 8);
+        const data = await bookService.getAll(currentPage, 9);
 
         if (data && data.content) {
           setBooks(data.content);
@@ -57,9 +57,14 @@ const HomePage = () => {
             {/* Using Trans component or splitting for the <br /> */}
             {t("home.hero.titlePart1")} <br /> {t("home.hero.titlePart2")}
           </h1>
-          <p className="subtitle">{t("home.hero.subtitle")}</p>
+          <p className={styles.subtitle}>{t("home.hero.subtitle")}</p>
           <div style={{ display: "flex", gap: "12px" }}>
-            <Button variant="primary">{t("home.hero.cta")}</Button>
+            <Button
+              variant="primary"
+              to="/catalog"
+            >
+              {t("home.hero.cta")}
+            </Button>
           </div>
         </div>
         <div className={styles.heroImage}>
@@ -78,6 +83,7 @@ const HomePage = () => {
             <BookCard
               key={book.id}
               book={book}
+              showAction={false}
             />
           ))}
         </div>

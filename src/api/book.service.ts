@@ -2,9 +2,34 @@ import type { BookDTO } from "../types/book";
 import api from "./axios";
 
 export const bookService = {
-  getAll: async (page = 0, size = 8) => {
+  getAll: async (page = 0, size = 9) => {
     const response = await api.get(`/books?page=${page}&size=${size}`, {
       withCredentials: true,
+    });
+    return response.data;
+  },
+
+  getBooks: async (
+    page: number,
+    size: number,
+    sortBy: string,
+    sortDir: string,
+    search?: string,
+    genre?: string,
+    ageGroup?: string,
+    language?: string,
+  ) => {
+    const response = await api.get("/books", {
+      params: {
+        page,
+        size,
+        sortBy,
+        sortDir,
+        search: search || undefined,
+        genre: genre || undefined,
+        ageGroup: ageGroup || undefined,
+        language: language || undefined,
+      },
     });
     return response.data;
   },

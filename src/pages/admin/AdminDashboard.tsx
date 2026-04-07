@@ -1,46 +1,55 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { orderService } from "../../api/order.service";
 import { toast } from "react-toastify";
 import Pagination from "../../components/ui/Pagination/Pagination";
 import styles from "./AdminDashboard.module.css";
 import type { OrderResponseDTO } from "../../types/orders";
-import { useTranslation } from "react-i18next"; // Added
+import { useTranslation } from "react-i18next";
 
 const AdminDashboard = () => {
-  const { t, i18n } = useTranslation(); // Added
+  const { t, i18n } = useTranslation();
   const [orders, setOrders] = useState<OrderResponseDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+
   const [searchId, setSearchId] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
+
+  const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     setLoading(true);
     try {
       const data = await orderService.getAllOrders(
         page,
         10,
-        activeSearch,
-        "createdAt",
+        sortBy,
         sortDir,
+        activeSearch,
       );
+
       setOrders(data.content || []);
       setTotalPages(data.totalPages || 0);
     } catch (err) {
-      toast.error(t("admin.orders.toast.loadError")); // Translated
+      toast.error(t("admin.orders.toast.loadError"));
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, activeSearch, sortBy, sortDir, t]);
 
   useEffect(() => {
     loadOrders();
-  }, [page, activeSearch, sortDir]);
+  }, [loadOrders]);
 
-  const toggleSort = () => {
-    setSortDir((prev) => (prev === "desc" ? "asc" : "desc"));
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortDir((prev) => (prev === "desc" ? "asc" : "desc"));
+    } else {
+      setSortBy(field);
+      setSortDir("desc");
+    }
     setPage(0);
   };
 
@@ -50,31 +59,41 @@ const AdminDashboard = () => {
     setActiveSearch(searchId);
   };
 
+  // Logic to handle clicking a User ID in the table
+  const handleUserClick = (clientId: number) => {
+    const idString = clientId.toString();
+    setSearchId(idString);
+    setActiveSearch(idString);
+    setPage(0); // Reset to first page for the specific user search
+  };
+
   const handleStatusUpdate = async (id: number, newStatus: string) => {
     try {
       await orderService.updateOrderStatus(id, newStatus);
-      toast.success(t("admin.orders.toast.updateSuccess", { id })); // Interpolated
-      await loadOrders();
+      toast.success(t("admin.orders.toast.updateSuccess", { id }));
+      loadOrders();
     } catch (err) {
-      toast.error(t("admin.orders.toast.updateError")); // Translated
+      toast.error(t("admin.orders.toast.updateError"));
     }
+  };
+
+  const renderSortIcon = (field: string) => {
+    if (sortBy !== field) return <span className={styles.sortIdle}>↕</span>;
+    return sortDir === "desc" ? " ▼" : " ▲";
   };
 
   return (
     <div className={styles.adminContainer}>
       <header className={styles.header}>
-        <div className={styles.headerText}>
-          <div className={styles.titleRow}>
-            <h1>{t("admin.orders.title")}</h1>
-            <button
-              className={`${styles.refreshBtn} ${loading ? styles.spinning : ""}`}
-              onClick={loadOrders}
-              title={t("admin.orders.refreshTitle")}
-              disabled={loading}
-            >
-              ↻
-            </button>
-          </div>
+        <div className={styles.titleRow}>
+          <h1>{t("admin.orders.title")}</h1>
+          <button
+            className={`${styles.refreshBtn} ${loading ? styles.spinning : ""}`}
+            onClick={loadOrders}
+            disabled={loading}
+          >
+            ↻
+          </button>
         </div>
         <form
           className={styles.searchBar}
@@ -111,19 +130,27 @@ const AdminDashboard = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>{t("admin.orders.table.id")}</th>
+              <th>ID</th>
               <th
-                onClick={toggleSort}
                 className={styles.sortableHeader}
+                onClick={() => handleSort("createdAt")}
               >
-                {t("admin.orders.table.date")} {sortDir === "desc" ? "▼" : "▲"}
+                {t("admin.orders.table.date")} {renderSortIcon("createdAt")}
               </th>
               <th>{t("admin.orders.table.client")}</th>
-              <th>{t("admin.orders.table.total")}</th>
-              <th>{t("admin.orders.table.status")}</th>
-              <th className={styles.actionsHeader}>
-                {t("admin.orders.table.actions")}
+              <th
+                className={styles.sortableHeader}
+                onClick={() => handleSort("price")}
+              >
+                {t("admin.orders.table.total")} {renderSortIcon("price")}
               </th>
+              <th
+                className={styles.sortableHeader}
+                onClick={() => handleSort("status")}
+              >
+                {t("admin.orders.table.status")} {renderSortIcon("status")}
+              </th>
+              <th>{t("admin.orders.table.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -133,17 +160,16 @@ const AdminDashboard = () => {
                   key={order.id}
                   className={styles.tableRow}
                 >
-                  <td className={styles.orderId}>#{order.id}</td>
+                  <td>#{order.id}</td>
                   <td>
                     {new Date(order.createdAt).toLocaleString(i18n.language)}
                   </td>
                   <td>
+                    {/* Clickable User ID */}
                     <button
                       className={styles.clientLink}
-                      onClick={() => {
-                        setSearchId(order.clientId.toString());
-                        setActiveSearch(order.clientId.toString());
-                      }}
+                      onClick={() => handleUserClick(order.clientId)}
+                      title={t("admin.orders.clickToFilter")}
                     >
                       {t("admin.orders.userLabel", { id: order.clientId })}
                     </button>
@@ -153,18 +179,17 @@ const AdminDashboard = () => {
                     <span
                       className={`${styles.statusBadge} ${styles[order.status.toLowerCase()]}`}
                     >
-                      {t(`account.orders.status.${order.status.toLowerCase()}`)}
+                      {order.status}
                     </span>
                   </td>
                   <td className={styles.actionsCell}>
-                    {order.status === "PENDING" ? (
+                    {order.status === "PENDING" && (
                       <div className={styles.btnGroup}>
                         <button
                           className={styles.approveBtn}
                           onClick={() =>
                             handleStatusUpdate(order.id, "COMPLETED")
                           }
-                          title={t("admin.orders.actions.approve")}
                         >
                           ✓
                         </button>
@@ -173,23 +198,18 @@ const AdminDashboard = () => {
                           onClick={() =>
                             handleStatusUpdate(order.id, "CANCELLED")
                           }
-                          title={t("admin.orders.actions.cancel")}
                         >
                           ✕
                         </button>
                       </div>
-                    ) : (
-                      <span className={styles.finalized}>
-                        {t("admin.orders.done")}
-                      </span>
                     )}
                   </td>
                 </tr>
               ))}
           </tbody>
         </table>
+        {loading && <div className={styles.loader}>{t("common.loading")}</div>}
       </div>
-
       <Pagination
         currentPage={page}
         totalPages={totalPages}

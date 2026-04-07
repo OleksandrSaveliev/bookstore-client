@@ -13,6 +13,18 @@
   justify-content: center;
 }
 
+.heroContent h1 {
+  font-size: 48px;
+  line-height: 1.1;
+  margin-bottom: 0;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #6b6f76;
+  margin-bottom: 32px;
+}
+
 .heroImage {
   display: flex;
   justify-content: flex-end;
@@ -27,10 +39,17 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 24px;
+  margin-bottom: 40px;
   width: 100%;
-  margin: 40px 0;
+}
+
+/* Optional: Smooth transition for mobile */
+@media (max-width: 700px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sectionTitle {

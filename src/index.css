@@ -17,19 +17,17 @@ body {
 }
 
 .container {
-  /* Main centering logic */
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 40px; /* Side padding so content doesn't touch edges on mobile */
+  padding: 0 40px;
 
-  /* Layout logic */
   display: flex;
   flex-direction: column;
-  flex: 1; /* This makes the container grow to fill vertical space */
+  flex: 1;
 }
 
 main {
-  flex: 1; /* Pushes footer to the bottom */
-  width: 100%; /* Ensures the outlet content takes full container width */
+  flex: 1;
+  width: 100%;
 }

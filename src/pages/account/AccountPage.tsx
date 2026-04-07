@@ -40,7 +40,7 @@ const AccountPage = () => {
     if (!user?.id) return;
     setOrdersLoading(true);
     try {
-      const data = await orderService.getByClientId(user.id);
+      const data = await orderService.getClientOrders();
       setOrders(data);
     } catch (err) {
       console.error("Failed to fetch orders:", err);

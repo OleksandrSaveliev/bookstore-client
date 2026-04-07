@@ -3,7 +3,7 @@
     "hero": {
       "titlePart1": "Discover Your",
       "titlePart2": "Next Favorite Book",
-      "subtitle": "Modern bookstore experience powered by Spring & React.",
+      "subtitle": "Explore our collection of books and find your next great read.",
       "cta": "Explore Now",
       "imageAlt": "Hero Bookstore"
     },
@@ -206,6 +206,30 @@
       "empty": "Your cart is empty.",
       "checkoutFailed": "Checkout failed. Please check your balance.",
       "unexpected": "An unexpected error occurred. Please try again."
+    }
+  },
+  "catalog": {
+    "searchPlaceholder": "Search by title or author...",
+    "sort": {
+      "name": "Title",
+      "price": "Price",
+      "author": "Author"
+    },
+    "languages": {
+      "all": "All Languages",
+      "ENGLISH": "English",
+      "SPANISH": "Spanish",
+      "FRENCH": "French",
+      "GERMAN": "German",
+      "JAPANESE": "Japanese",
+      "UKRAINIAN": "Ukrainian",
+      "OTHER": "Other"
+    },
+    "ageGroups": {
+      "all": "All Ages",
+      "KIDS": "Children",
+      "TEENS": "Teens",
+      "ADULTS": "Adults"
     }
   }
 }

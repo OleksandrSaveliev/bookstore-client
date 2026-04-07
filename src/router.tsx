@@ -8,6 +8,7 @@ import CartPage from "./pages/cart/CartPage";
 import AuthPage from "./pages/auth/AuthPage";
 import AccountPage from "./pages/account/AccountPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import BookCatalog from "./pages/books/BookCatalog";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,13 @@ export const router = createBrowserRouter([
             element: <div className="fade-in">Client Profile</div>,
           },
         ],
+      },
+
+      {
+        element: (
+          <ProtectedRoute allowedRoles={["ROLE_CLIENT", "ROLE_EMPLOYEE"]} />
+        ),
+        children: [{ path: "catalog", element: <BookCatalog /> }],
       },
 
       // --- 3. EMPLOYEE ONLY ROUTES ---
