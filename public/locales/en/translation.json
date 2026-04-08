@@ -110,6 +110,7 @@
       "save": "Save Changes",
       "saving": "Saving...",
       "cancel": "Cancel",
+      "selectLanguage": "Select language",
       "labels": {
         "name": "Book Title",
         "author": "Author",
@@ -151,6 +152,7 @@
     }
   },
   "bookDetails": {
+    "back": "Back",
     "loading": "Loading book details...",
     "notFound": "Book not found.",
     "by": "by",

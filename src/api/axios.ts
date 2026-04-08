@@ -13,7 +13,7 @@ interface BackendError {
 
 const api = axios.create({
   baseURL: "http://localhost:8084/api/v1",
-  withCredentials: true, // MANDATORY: Sends JWT/Refresh cookies automatically
+  withCredentials: true,
 });
 
 interface FailedRequest {
@@ -51,8 +51,6 @@ api.interceptors.response.use(
     const data = response.data as BackendError;
     const currentPath = window.location.pathname;
 
-    // 1. UPDATED: Skip refresh logic if we are on Login or the OAuth callback page
-    // This prevents infinite loops if the Google login failed or the cookie is dead.
     const isAuthPage =
       currentPath.includes("/login") || currentPath.includes("/oauth-callback");
 
@@ -73,18 +71,13 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // This call sends the 'refresh_token' cookie set by Google or standard Login
         await api.post("/auth/refresh");
         processQueue(null);
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-
-        // 2. SESSION EXPIRED: Clear state and force re-auth
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("user"); // Or whatever key you use for user state
-
-        // Prevent redirecting if we're already trying to log in
+        localStorage.removeItem("user");
         if (!isAuthPage) {
           window.location.href = "/login?expired=true";
         }
@@ -94,27 +87,29 @@ api.interceptors.response.use(
       }
     }
 
-    // 3. GLOBAL ERROR HANDLING
     switch (status) {
       case 400:
-        if (data.errors) {
-          toast.error("Please fix the errors in the form.");
-        } else {
+        if (!data.errors) {
           toast.error(data.message || "Invalid Request");
         }
         break;
+
       case 404:
         toast.error(data.message || "Resource not found");
         break;
+
       case 409:
-        toast.error(data.message || "This already exists.");
+        toast.error(data.message || "Conflict occurred.");
         break;
+
       case 403:
         toast.error(data.message || "Access denied");
         break;
+
       case 500:
         toast.error("Server error. Please try again later.");
         break;
+
       default:
         if (status !== 401) {
           toast.error(data.message || "An unexpected error occurred.");

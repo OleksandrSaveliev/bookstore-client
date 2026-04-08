@@ -136,3 +136,23 @@
 .authHint a:hover {
   text-decoration: underline;
 }
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #636e72;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease;
+  gap: 0.5rem;
+}
+
+.backButton:hover {
+  color: #2d3436;
+  transform: translateX(-4px); /* Subtle "nudge" to the left */
+}

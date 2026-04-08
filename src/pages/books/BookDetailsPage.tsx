@@ -44,10 +44,17 @@ const BookDetailsPage = () => {
       await bookService.update(Number(id), updatedData);
       toast.success(t("bookDetails.admin.updateSuccess"));
       setIsEditing(false);
+
+      // Refresh local state with updated data from server
       const data = await bookService.getById(Number(id));
       setBook(data);
-    } catch (err) {
-      toast.error(t("bookDetails.admin.updateError"));
+    } catch (err: any) {
+      // 1. If it's a validation error (400), don't show a generic toast here.
+      // 2. IMPORTANT: Re-throw the error so EditBookForm can catch it and show inline messages!
+      if (err.response?.status !== 400) {
+        toast.error(t("bookDetails.admin.updateError"));
+      }
+      throw err;
     }
   };
 
@@ -70,6 +77,14 @@ const BookDetailsPage = () => {
 
   return (
     <div className={`${styles.container} fade-in`}>
+      {/* Added a Back Button for better UX */}
+      <button
+        onClick={() => navigate(-1)}
+        className={styles.backButton}
+      >
+        ← {t("bookDetails.back")}
+      </button>
+
       <div className={styles.content}>
         <div className={styles.info}>
           <span className={styles.tag}>{book.genre}</span>
