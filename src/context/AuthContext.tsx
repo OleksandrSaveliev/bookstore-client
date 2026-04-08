@@ -1,4 +1,12 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useMemo,
+} from "react";
+import axios from "axios";
 
 interface AuthUser {
   id: number;
@@ -15,52 +23,93 @@ interface AuthContextType {
   user: AuthUser | null;
   userData: FullUser | null;
   login: (data: AuthUser) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   setUserData: (data: FullUser) => void;
   isAuthenticated: boolean;
-  // --- New Helper Booleans ---
   isEmployee: boolean;
   isClient: boolean;
+  isAdmin: boolean; // Added for your new Admin user
+  loading: boolean;
+  refreshUser: () => Promise<AuthUser | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const USER_ME_URL = "http://localhost:8084/api/v1/users/me";
+const AUTH_BASE_URL = "http://localhost:8084/api/v1/auth";
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    const saved = localStorage.getItem("user");
-    if (!saved) return null;
-    try {
-      const parsed = JSON.parse(saved);
-      // Ensure it has an ID and roles array
-      return parsed.id && Array.isArray(parsed.roles) ? parsed : null;
-    } catch (e) {
-      console.error("Auth initialization failed:", e);
-      return null;
-    }
-  });
-
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [userData, setUserData] = useState<FullUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // --- Logic to handle "ROLE_" prefix flexibly ---
-  const isEmployee = !!user?.roles?.some(
-    (role) => role === "ROLE_EMPLOYEE" || role === "EMPLOYEE",
-  );
+  // Helper to check roles regardless of "ROLE_" prefix
+  const hasRole = (roleNames: string[]) => {
+    return !!user?.roles?.some((r) =>
+      roleNames.some((name) => r === name || r === `ROLE_${name}`),
+    );
+  };
 
-  const isClient = !!user?.roles?.some(
-    (role) => role === "ROLE_CLIENT" || role === "CLIENT" || role === "USER",
-  );
+  const isAdmin = useMemo(() => hasRole(["ADMIN"]), [user]);
+  const isEmployee = useMemo(() => hasRole(["EMPLOYEE", "ADMIN"]), [user]); // Admins usually see employee pages
+  const isClient = useMemo(() => hasRole(["CLIENT", "USER"]), [user]);
+
+  const refreshUser = async (): Promise<AuthUser | null> => {
+    try {
+      const response = await axios.get(USER_ME_URL, {
+        withCredentials: true,
+      });
+
+      const data = response.data;
+      if (data) {
+        setUser(data);
+        setUserData(data);
+        localStorage.setItem("user", JSON.stringify(data));
+        return data;
+      }
+      return null;
+    } catch (error) {
+      setUser(null);
+      setUserData(null);
+      localStorage.removeItem("user");
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const saved = localStorage.getItem("user");
+    if (saved) {
+      try {
+        setUser(JSON.parse(saved));
+      } catch (e) {
+        localStorage.removeItem("user");
+      }
+    }
+    refreshUser();
+  }, []);
 
   const login = (data: AuthUser) => {
     setUser(data);
     localStorage.setItem("user", JSON.stringify(data));
   };
 
-  const logout = () => {
-    setUser(null);
-    setUserData(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token"); // Good practice to clear token too
-    window.location.href = "/login";
+  const logout = async () => {
+    try {
+      await axios.post(
+        `${AUTH_BASE_URL}/logout`,
+        {},
+        { withCredentials: true },
+      );
+    } catch (error) {
+      console.error("Logout request failed", error);
+    } finally {
+      setUser(null);
+      setUserData(null);
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -72,11 +121,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         setUserData,
         isAuthenticated: !!user,
-        isEmployee, // Exposed here
-        isClient, // Exposed here
+        isEmployee,
+        isClient,
+        isAdmin,
+        loading,
+        refreshUser,
       }}
     >
-      {children}
+      {!loading ? (
+        children
+      ) : (
+        <div className="flex items-center justify-center h-screen">
+          <p>Verifying session...</p>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };

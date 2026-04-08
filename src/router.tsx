@@ -9,6 +9,7 @@ import AuthPage from "./pages/auth/AuthPage";
 import AccountPage from "./pages/account/AccountPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import BookCatalog from "./pages/books/BookCatalog";
+import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler"; // Import the handler
 
 export const router = createBrowserRouter([
   {
@@ -19,11 +20,17 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "login", element: <AuthPage /> },
       { path: "signup", element: <AuthPage /> },
+
+      // OAuth2 Landing Route: Matches response.sendRedirect(".../oauth-callback")
+      { path: "oauth-callback", element: <OAuth2RedirectHandler /> },
+
       { path: "app/books/:id", element: <BookDetailsPage /> },
 
       // --- 2. CLIENT ONLY ROUTES ---
       {
-        element: <ProtectedRoute allowedRoles={["ROLE_CLIENT"]} />,
+        element: (
+          <ProtectedRoute allowedRoles={["ROLE_CLIENT", "ROLE_ADMIN"]} />
+        ),
         children: [
           { path: "cart", element: <CartPage /> },
           { path: "account", element: <AccountPage /> },
@@ -36,21 +43,24 @@ export const router = createBrowserRouter([
 
       {
         element: (
-          <ProtectedRoute allowedRoles={["ROLE_CLIENT", "ROLE_EMPLOYEE"]} />
+          <ProtectedRoute
+            allowedRoles={["ROLE_CLIENT", "ROLE_EMPLOYEE", "ROLE_ADMIN"]}
+          />
         ),
         children: [{ path: "catalog", element: <BookCatalog /> }],
       },
 
-      // --- 3. EMPLOYEE ONLY ROUTES ---
+      // --- 3. EMPLOYEE / ADMIN ONLY ROUTES ---
       {
         path: "admin",
-        element: <ProtectedRoute allowedRoles={["ROLE_EMPLOYEE"]} />,
+        element: (
+          <ProtectedRoute allowedRoles={["ROLE_EMPLOYEE", "ROLE_ADMIN"]} />
+        ),
         children: [
           {
             index: true,
             element: <AdminDashboard />,
           },
-
           {
             path: "clients",
             element: <div className="fade-in">Manage Clients</div>,

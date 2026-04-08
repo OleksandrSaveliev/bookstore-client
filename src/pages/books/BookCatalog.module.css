@@ -2,6 +2,7 @@
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
 }
 
 .header {
@@ -35,19 +36,69 @@
   background: white;
 }
 
+/* THE FIX: Stable height and relative positioning */
+.contentArea {
+  position: relative;
+  min-height: 600px; /* Adjust based on your card height */
+  margin-top: 2rem;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Force 3 columns */
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+  transition: opacity 0.3s ease;
 }
 
-.loader {
+.gridLoading {
+  opacity: 0.3; /* Keep it visible but faded to maintain height */
+  pointer-events: none; /* Block interactions while fetching */
+}
+
+/* Loader that sits on top of the grid without moving it */
+.loaderOverlay {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.paginationWrapper {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
   text-align: center;
   padding: 5rem;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  color: #666;
 }
 
-/* Responsive: 2 columns for tablets, 1 for mobile */
+/* Responsive adjustments */
 @media (max-width: 992px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);

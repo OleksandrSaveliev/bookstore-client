@@ -4,7 +4,7 @@ import { BookCard } from "../../components/books/BookCard";
 import { Button } from "../../components/ui/Button/Button";
 import styles from "./Home.module.css";
 import type { BookDTO } from "../../types/book";
-import { useTranslation } from "react-i18next"; // Added
+import { useTranslation } from "react-i18next";
 
 const HomePage = () => {
   const { t } = useTranslation();
@@ -19,15 +19,19 @@ const HomePage = () => {
       try {
         const data = await bookService.getAll(currentPage, 9);
 
-        if (data && data.content) {
-          setBooks(data.content);
-          setTotalPages(data.totalPages);
-        } else if (Array.isArray(data)) {
-          setBooks(data);
-          setTotalPages(1);
-        }
+        /**
+         * HATEOAS Extraction for VIA_DTO mode
+         */
+        const content =
+          data._embedded?.bookResponseDTOList || data.content || [];
+        const total = data.page?.totalPages ?? data.totalPages ?? 0;
+
+        setBooks(content);
+        setTotalPages(total);
       } catch (err) {
         console.error("Connection Refused or API Error:", err);
+        setBooks([]);
+        setTotalPages(0);
       } finally {
         setLoading(false);
       }
@@ -38,14 +42,12 @@ const HomePage = () => {
   const handleNext = () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handlePrev = () => {
     if (currentPage > 0) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -54,7 +56,6 @@ const HomePage = () => {
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <h1>
-            {/* Using Trans component or splitting for the <br /> */}
             {t("home.hero.titlePart1")} <br /> {t("home.hero.titlePart2")}
           </h1>
           <p className={styles.subtitle}>{t("home.hero.subtitle")}</p>
@@ -69,49 +70,61 @@ const HomePage = () => {
         </div>
         <div className={styles.heroImage}>
           <img
-            src="/hero-image.webp" // Removed /public/ as Vite serves from root
+            src="/hero-image.webp"
             alt={t("home.hero.imageAlt")}
           />
         </div>
       </section>
 
-      <section>
+      <section className={styles.catalogSection}>
         <h2 className={styles.sectionTitle}>{t("home.catalogTitle")}</h2>
 
-        <div className={styles.grid}>
-          {books.map((book) => (
-            <BookCard
-              key={book.id}
-              book={book}
-              showAction={false}
-            />
-          ))}
-        </div>
-
-        {/* PAGINATION BAR */}
-        <div className={styles.pagination}>
-          <Button
-            onClick={handlePrev}
-            disabled={currentPage === 0 || loading}
+        <div className={styles.contentArea}>
+          <div
+            className={`${styles.grid} ${loading ? styles.gridLoading : ""}`}
           >
-            {t("home.pagination.prev")}
-          </Button>
+            {books.map((book) => (
+              <BookCard
+                key={book.id}
+                book={book}
+                showAction={false}
+              />
+            ))}
+          </div>
 
-          <span className={styles.pageInfo}>
-            {loading
-              ? "..."
-              : t("home.pagination.info", {
-                  current: currentPage + 1,
-                  total: totalPages,
-                })}
-          </span>
+          {loading && (
+            <div className={styles.loaderOverlay}>
+              <div className={styles.spinner}></div>
+            </div>
+          )}
 
-          <Button
-            onClick={handleNext}
-            disabled={currentPage >= totalPages - 1 || loading}
-          >
-            {t("home.pagination.next")}
-          </Button>
+          {/* PAGINATION BAR */}
+          {totalPages > 1 && (
+            <div className={styles.pagination}>
+              <Button
+                onClick={handlePrev}
+                disabled={currentPage === 0 || loading}
+              >
+                {t("home.pagination.prev")}
+              </Button>
+
+              <span className={styles.pageInfo}>
+                {loading
+                  ? "..."
+                  : t("home.pagination.info", {
+                      current: currentPage + 1,
+                      total: totalPages,
+                    })}
+              </span>
+
+              <Button
+                onClick={handleNext}
+                disabled={currentPage >= totalPages - 1 || loading}
+              >
+                {t("home.pagination.next")}
+              </Button>
+            </div>
+          )}
         </div>
       </section>
     </div>

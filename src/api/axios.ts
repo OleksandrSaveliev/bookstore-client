@@ -13,11 +13,11 @@ interface BackendError {
 
 const api = axios.create({
   baseURL: "http://localhost:8084/api/v1",
-  withCredentials: true,
+  withCredentials: true, // MANDATORY: Sends JWT/Refresh cookies automatically
 });
 
 interface FailedRequest {
-  resolve: (token?: string) => void;
+  resolve: (value?: any) => void;
   reject: (error: any) => void;
 }
 
@@ -49,11 +49,18 @@ api.interceptors.response.use(
 
     const status = response.status;
     const data = response.data as BackendError;
+    const currentPath = window.location.pathname;
+
+    // 1. UPDATED: Skip refresh logic if we are on Login or the OAuth callback page
+    // This prevents infinite loops if the Google login failed or the cookie is dead.
+    const isAuthPage =
+      currentPath.includes("/login") || currentPath.includes("/oauth-callback");
 
     if (status === 401 && !originalRequest._retry) {
-      if (window.location.pathname.includes("/login")) {
+      if (isAuthPage) {
         return Promise.reject(error);
       }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -61,23 +68,33 @@ api.interceptors.response.use(
           .then(() => api(originalRequest))
           .catch((err) => Promise.reject(err));
       }
+
       originalRequest._retry = true;
       isRefreshing = true;
+
       try {
+        // This call sends the 'refresh_token' cookie set by Google or standard Login
         await api.post("/auth/refresh");
         processQueue(null);
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
+
+        // 2. SESSION EXPIRED: Clear state and force re-auth
         toast.error("Session expired. Please log in again.");
-        localStorage.clear();
-        window.location.href = "/login?expired=true";
+        localStorage.removeItem("user"); // Or whatever key you use for user state
+
+        // Prevent redirecting if we're already trying to log in
+        if (!isAuthPage) {
+          window.location.href = "/login?expired=true";
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
     }
 
+    // 3. GLOBAL ERROR HANDLING
     switch (status) {
       case 400:
         if (data.errors) {

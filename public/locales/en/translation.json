@@ -126,6 +126,10 @@
     "error": {
       "unexpected": "An unexpected error occurred"
     },
+    "google": {
+      "login": "Sign in with Google",
+      "signup": "Sign up with Google"
+    },
     "labels": {
       "name": "Full Name",
       "email": "Email",

@@ -47,6 +47,11 @@ const AuthPage = () => {
     );
   }
 
+  const handleGoogleLogin = () => {
+    // This triggers the Spring Security OAuth2 flow
+    window.location.href = "http://localhost:8084/oauth2/authorization/google";
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -63,7 +68,6 @@ const AuthPage = () => {
       navigate(searchParams.get("redirect") || "/");
     } catch (err: any) {
       const data = err.response?.data;
-
       if (data?.errors) {
         setFieldErrors(data.errors);
       } else {
@@ -128,6 +132,26 @@ const AuthPage = () => {
                 : t("auth.register.submit")}
           </Button>
         </form>
+
+        <div className={styles.divider}>
+          <span></span>
+        </div>
+
+        <Button
+          variant="secondary"
+          type="button"
+          onClick={handleGoogleLogin}
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+            marginBottom: "1.5rem",
+          }}
+        >
+          {isLogin ? t("auth.google.login") : t("auth.google.signup")}
+        </Button>
 
         <div className={styles.footer}>
           {isLogin ? t("auth.login.footerText") : t("auth.register.footerText")}

@@ -20,9 +20,7 @@ const BookCatalog = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // UI State for the input field
   const [search, setSearch] = useState("");
-  // State that actually triggers the API call
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [page, setPage] = useState(0);
@@ -31,15 +29,16 @@ const BookCatalog = () => {
   const [sortDir, setSortDir] = useState("asc");
   const [language, setLanguage] = useState("");
 
+  // 1. Debounce Search logic
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
       setPage(0);
     }, 500);
-
     return () => clearTimeout(timer);
   }, [search]);
 
+  // 2. Optimized Fetch logic
   const fetchBooks = useCallback(async () => {
     setLoading(true);
     try {
@@ -53,10 +52,16 @@ const BookCatalog = () => {
         undefined,
         language,
       );
-      setBooks(data.content || []);
-      setTotalPages(data.totalPages || 0);
+
+      const content = data._embedded?.bookResponseDTOList || data.content || [];
+      const total = data.page?.totalPages ?? data.totalPages ?? 0;
+
+      setBooks(content);
+      setTotalPages(total);
     } catch (err) {
       console.error("Catalog fetch error", err);
+      setBooks([]);
+      setTotalPages(0);
     } finally {
       setLoading(false);
     }
@@ -66,20 +71,28 @@ const BookCatalog = () => {
     fetchBooks();
   }, [fetchBooks]);
 
+  // Handler for page change that prevents the default jump
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    // Optional: Smoothly scroll to the TOP of the header, not the whole page
+    // document.getElementById('catalog-header')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
+      <header
+        className={styles.header}
+        id="catalog-header"
+      >
         <h1>{t("home.catalogTitle")}</h1>
-
         <div className={styles.toolbar}>
           <input
             type="text"
             placeholder={t("catalog.searchPlaceholder")}
             className={styles.searchInput}
             value={search}
-            onChange={(e) => setSearch(e.target.value)} // Updates UI state immediately
+            onChange={(e) => setSearch(e.target.value)}
           />
-
           <div className={styles.filters}>
             <select
               value={sortBy}
@@ -92,7 +105,6 @@ const BookCatalog = () => {
               <option value="price">{t("catalog.sort.price")}</option>
               <option value="author">{t("catalog.sort.author")}</option>
             </select>
-
             <select
               value={sortDir}
               onChange={(e) => {
@@ -103,7 +115,6 @@ const BookCatalog = () => {
               <option value="asc">ASC</option>
               <option value="desc">DESC</option>
             </select>
-
             <select
               value={language}
               onChange={(e) => {
@@ -125,25 +136,41 @@ const BookCatalog = () => {
         </div>
       </header>
 
-      {loading ? (
-        <div className={styles.loader}>{t("account.loading")}</div>
-      ) : (
-        <>
-          <div className={styles.grid}>
-            {books.map((book) => (
+      <div className={styles.contentArea}>
+        {/* We keep the grid in the DOM even during loading to maintain height */}
+        <div className={`${styles.grid} ${loading ? styles.gridLoading : ""}`}>
+          {books.length > 0 ? (
+            books.map((book) => (
               <BookCard
                 key={book.id}
                 book={book}
               />
-            ))}
+            ))
+          ) : !loading ? (
+            <div className={styles.emptyState}>
+              No books matches your criteria.
+            </div>
+          ) : null}
+        </div>
+
+        {/* Overlay loader so height doesn't change */}
+        {loading && (
+          <div className={styles.loaderOverlay}>
+            <div className={styles.spinner}></div>
+            <p>{t("account.loading")}</p>
           </div>
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </>
-      )}
+        )}
+
+        {totalPages > 1 && (
+          <div className={styles.paginationWrapper}>
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
